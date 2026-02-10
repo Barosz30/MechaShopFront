@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com; " +
     "style-src 'self' 'unsafe-inline'; " +
     "img-src 'self' data: https://lh3.googleusercontent.com; " +
-    "connect-src 'self' http://localhost:3000 http://localhost:4200 ws://localhost:4200 https://accounts.google.com https://oauth2.googleapis.com; " +
+    "connect-src 'self' http://localhost:3000 http://localhost:4200 ws://localhost:4200 https://accounts.google.com https://oauth2.googleapis.com https://mechanicalshopbackend.onrender.com; " +
     "frame-src 'self' https://accounts.google.com;"
   );
   next();
