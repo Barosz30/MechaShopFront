@@ -1,8 +1,46 @@
 <div class="home-container">
-  <h1>Witaj w systemie Warsztat! 🚗</h1>
-  <p>To jest strona główna aplikacji.</p>
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Mechanika w Twoich <span class="highlight">Rękach</span></h1>
+      <p>Od precyzyjnych śrubek po potężne skutery. Wszystko, czego potrzebujesz do swojej maszyny.</p>
+      <div class="cta-buttons">
+        <button class="btn-primary">Sprawdź Sklep</button>
+        <button class="btn-secondary">Nowości</button>
+      </div>
+    </div>
+  </section>
 
-  <div class="actions">
-    <a routerLink="/login" class="btn">Przejdź do logowania</a>
+  <section class="categories">
+    <div class="section-header">
+      <h2>Popularne Kategorie</h2>
+      <a href="#" class="view-all-link">Zobacz wszystkie</a>
+    </div>
+
+    <div class="category-grid">
+      @for (cat of categories; track cat.name) {
+        <div class="category-card">
+          <div class="icon-wrapper">
+            <i [class]="cat.icon"></i>
+          </div>
+          <div class="card-content">
+            <h3>{{ cat.name }}</h3>
+            <p>{{ cat.count }} produktów</p>
+          </div>
+          <i [class]="cat.icon + ' card-bg-icon'"></i>
+        </div>
+      }
+    </div>
+  </section>
+
+<section class="featured-banner">
+  <div class="banner-glass">
+    <span class="badge">Polecane</span>
+    <h2>Skuter Elektryczny <span class="text-neon">X-200</span></h2>
+    <p>Zasięg 100km, napęd bezszczotkowy i system odzyskiwania energii.</p>
+    <div class="banner-footer">
+      <span class="price">4 299 PLN</span>
+      <button class="btn-glass">Sprawdź detale</button>
+    </div>
   </div>
+</section>
 </div>

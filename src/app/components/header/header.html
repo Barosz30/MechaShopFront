@@ -1,18 +1,27 @@
-<header class="main-header">
-  <div class="container">
-    <div class="logo">
-      Mój<span>Sklep</span>
-    </div>
+<header class="navbar">
+  <div class="logo" routerLink="/">Warsztat 🚗</div>
 
-    <nav class="nav-links">
-      <ul>
-        <li><a href="#">Start</a></li>
-        <li><a href="#">O nas</a></li>
-        <li><a href="#">Usługi</a></li>
-        <li><a href="#">Kontakt</a></li>
-      </ul>
-    </nav>
+  <nav>
+    <a routerLink="/">Start</a>
 
-    <button class="cta-button">Zaloguj się</button>
-  </div>
+    @if (authService.currentUser(); as user) {
+      <div class="user-menu">
+        <div class="avatar" [title]="user.username">
+          {{ getInitials(user.username) }}
+        </div>
+
+        <button class="logout-btn" (click)="logout()">
+          Wyloguj
+        </button>
+      </div>
+    } @else {
+      <button class="login-btn" (click)="isModalOpen.set(true)">
+        Zaloguj
+      </button>
+    }
+  </nav>
 </header>
+
+@if (isModalOpen()) {
+  <app-login-modal (close)="isModalOpen.set(false)"></app-login-modal>
+}
