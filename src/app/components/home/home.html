@@ -1,12 +1,18 @@
 <div class="home-container">
   <section class="hero">
-    <div class="hero-content">
+    <div class="hero-bg-image"></div> <div class="hero-content">
       <h1>Mechanika w Twoich <span class="highlight">Rękach</span></h1>
       <p>Od precyzyjnych śrubek po potężne skutery. Wszystko, czego potrzebujesz do swojej maszyny.</p>
       <div class="cta-buttons">
         <button class="btn-primary">Sprawdź Sklep</button>
         <button class="btn-secondary">Nowości</button>
       </div>
+    </div>
+
+    <div class="floating-elements">
+      <i class="fas fa-cog gear-1"></i>
+      <i class="fas fa-wrench wrench-1"></i>
+      <i class="fas fa-bolt bolt-1"></i>
     </div>
   </section>
 
@@ -18,29 +24,37 @@
 
     <div class="category-grid">
       @for (cat of categories; track cat.name) {
-        <div class="category-card">
-          <div class="icon-wrapper">
-            <i [class]="cat.icon"></i>
+        <div class="category-card"
+             #card
+             (mousemove)="handleMouseMove($event, card)">
+             <img [ngSrc]="cat.image"
+                alt="{{ cat.name }} tło"
+                fill
+                priority> <div class="card-overlay"></div>
+            <div class="spotlight"></div>
+
+          <div class="content-wrapper"> <div class="icon-wrapper">
+              <i [class]="cat.icon"></i>
+            </div>
+            <div class="card-content">
+              <h3>{{ cat.name }}</h3>
+              <p>{{ cat.count }} produktów</p>
+            </div>
           </div>
-          <div class="card-content">
-            <h3>{{ cat.name }}</h3>
-            <p>{{ cat.count }} produktów</p>
-          </div>
-          <i [class]="cat.icon + ' card-bg-icon'"></i>
         </div>
       }
     </div>
   </section>
 
-<section class="featured-banner">
-  <div class="banner-glass">
-    <span class="badge">Polecane</span>
-    <h2>Skuter Elektryczny <span class="text-neon">X-200</span></h2>
-    <p>Zasięg 100km, napęd bezszczotkowy i system odzyskiwania energii.</p>
-    <div class="banner-footer">
-      <span class="price">4 299 PLN</span>
-      <button class="btn-glass">Sprawdź detale</button>
+  <section class="featured-banner">
+    <div class="banner-glass">
+      <span class="badge">Polecane</span>
+      <h2>Skuter Elektryczny <span class="text-neon">X-200</span></h2>
+      <p>Zasięg 100km, napęd bezszczotkowy i system odzyskiwania energii.</p>
+      <div class="banner-footer">
+        <span class="price">4 299 PLN</span>
+        <button class="btn-glass">Sprawdź detale</button>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 </div>
