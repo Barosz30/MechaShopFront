@@ -40,13 +40,21 @@ app.use(
 
 /**
  * Handle all other requests by rendering the Angular application.
+ * Jeśli Angular SSR z jakiegoś powodu nie wygeneruje odpowiedzi,
+ * robimy fallback do index.html (SPA-style), żeby deep linki typu /items/3 działały.
  */
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .then((response) => {
+      if (response) {
+        // Standardowa odpowiedź SSR
+        return writeResponseToNodeResponse(response, res);
+      }
+
+      // Fallback: zwróć index.html z buildu przeglądarkowego
+      return res.sendFile(join(browserDistFolder, 'index.html'));
+    })
     .catch(next);
 });
 
