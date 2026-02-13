@@ -1,0 +1,59 @@
+<div class="item-details-container">
+  <div *ngIf="loading()" class="state-message">
+    Ładowanie szczegółów przedmiotu...
+  </div>
+
+  <div *ngIf="error()" class="state-message error">
+    {{ error() }}
+  </div>
+
+  <ng-container *ngIf="!loading() && !error() && item() as item">
+    <section class="item-header">
+      <h1>{{ item.name }}</h1>
+      <div class="price-availability">
+        <span class="price">{{ item.price | currency:'PLN':'symbol':'1.0-0' }}</span>
+        <span
+          class="availability"
+          [class.available]="item.isAvailable"
+          [class.unavailable]="!item.isAvailable">
+          {{ item.isAvailable ? 'Dostępny' : 'Niedostępny' }}
+        </span>
+      </div>
+      <p *ngIf="item.description" class="description">
+        {{ item.description }}
+      </p>
+    </section>
+
+    <section class="item-body" *ngIf="item.details || item.category">
+      <div class="details-card" *ngIf="item.details">
+        <h2>Szczegóły techniczne</h2>
+        <dl>
+          <div>
+            <dt>Producent</dt>
+            <dd>{{ item.details.manufacturer }}</dd>
+          </div>
+          <div>
+            <dt>Materiał</dt>
+            <dd>{{ item.details.material }}</dd>
+          </div>
+          <div>
+            <dt>Waga</dt>
+            <dd>{{ item.details.weight }} kg</dd>
+          </div>
+          <div>
+            <dt>Kolor</dt>
+            <dd>{{ item.details.color }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="category-card" *ngIf="item.category">
+        <h2>Kategoria</h2>
+        <p>{{ item.category.name }}</p>
+      </div>
+    </section>
+
+    <a routerLink="/" class="back-link">← Wróć na stronę główną</a>
+  </ng-container>
+</div>
+

@@ -1,0 +1,38 @@
+<div class="shop-items-list-container">
+  <h2>Przedmioty w sklepie</h2>
+
+  <div *ngIf="loading()" class="state-message">
+    Ładowanie listy przedmiotów...
+  </div>
+
+  <div *ngIf="error()" class="state-message error">
+    {{ error() }}
+  </div>
+
+  <div *ngIf="!loading() && !error() && items().length === 0" class="state-message">
+    Brak przedmiotów do wyświetlenia.
+  </div>
+
+  <div class="items-grid" *ngIf="!loading() && !error() && items().length > 0">
+    <a
+      class="item-card"
+      *ngFor="let item of items()"
+      [routerLink]="['/item', item.id]">
+      <div class="item-header">
+        <h3>{{ item.name }}</h3>
+      </div>
+      <div class="item-body">
+        <span class="price">
+          {{ item.price | currency:'PLN':'symbol':'1.0-0' }}
+        </span>
+        <span
+          class="availability"
+          [class.available]="item.isAvailable"
+          [class.unavailable]="!item.isAvailable">
+          {{ item.isAvailable ? 'Dostępny' : 'Niedostępny' }}
+        </span>
+      </div>
+    </a>
+  </div>
+</div>
+

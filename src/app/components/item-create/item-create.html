@@ -1,0 +1,49 @@
+<div class="item-create-container">
+  <h2>Dodaj nowy przedmiot</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="field">
+      <label for="name">Nazwa</label>
+      <input id="name" type="text" formControlName="name" />
+    </div>
+
+    <div class="field">
+      <label for="type">Typ (ItemTypes)</label>
+      <input
+        id="type"
+        type="text"
+        formControlName="type"
+        placeholder="np. BIKE, PARTS – zgodnie z enumem backendu"
+      />
+    </div>
+
+    <div class="field">
+      <label for="price">Cena (PLN)</label>
+      <input id="price" type="number" formControlName="price" />
+    </div>
+
+    <div class="field">
+      <label for="description">Opis</label>
+      <textarea id="description" rows="3" formControlName="description"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="categoryId">ID kategorii (opcjonalne)</label>
+      <input id="categoryId" type="number" formControlName="categoryId" />
+    </div>
+
+    <div class="field">
+      <label for="image">Obrazek produktu (opcjonalny)</label>
+      <input id="image" type="file" accept="image/*" (change)="onFileChange($event)" />
+    </div>
+
+    <div *ngIf="error()" class="state-message error">
+      {{ error() }}
+    </div>
+
+    <button type="submit" [disabled]="loading()">
+      {{ loading() ? 'Zapisywanie...' : 'Zapisz przedmiot' }}
+    </button>
+  </form>
+</div>
+
