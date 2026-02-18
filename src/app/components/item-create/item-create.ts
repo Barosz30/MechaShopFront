@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, signal, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ShopItemsService, CreateShopItemInput } from '../../core/shop-items/shop-items.service';
 import { lastValueFrom } from 'rxjs';
+import { CreateShopItemInput, ShopItem, ShopItemsService } from '../../core/shop-items/shop-items.service';
 
 @Component({
   selector: 'app-item-create',
@@ -55,7 +55,7 @@ export class ItemCreateComponent {
 
       const file = this.selectedFile();
       if (file) {
-        imageUrl = await lastValueFrom(this.shopItemsService.uploadImage(file));
+        imageUrl = await lastValueFrom<string>(this.shopItemsService.uploadImage(file));
       }
 
       const raw = this.form.getRawValue();
@@ -68,16 +68,25 @@ export class ItemCreateComponent {
         categoryId: raw.categoryId ?? undefined
       };
 
-      const created = await lastValueFrom(this.shopItemsService.createItem(input));
+      const created = await lastValueFrom<ShopItem>(this.shopItemsService.createItem(input));
 
       this.loading.set(false);
       // Przekieruj na stronę szczegółów nowo utworzonego przedmiotu
       await this.router.navigate(['/item', created.id]);
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      console.error('Błąd podczas tworzenia przedmiotu:', e);
       this.loading.set(false);
-      this.error.set('Nie udało się utworzyć przedmiotu.');
+      
+      // Wyświetl bardziej szczegółowy komunikat błędu
+      if (e?.error?.message) {
+        this.error.set(`Błąd: ${e.error.message}`);
+      } else if (e?.message) {
+        this.error.set(`Błąd: ${e.message}`);
+      } else if (e?.status === 0) {
+        this.error.set('Nie można połączyć się z serwerem. Sprawdź czy backend działa na http://localhost:3000');
+      } else {
+        this.error.set('Nie udało się utworzyć przedmiotu.');
+      }
     }
   }
 }
-

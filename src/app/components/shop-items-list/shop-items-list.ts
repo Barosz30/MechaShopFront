@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ShopItemsService, ShopItem } from '../../core/shop-items/shop-items.service';
+import { ShopItem, ShopItemsService } from '../../core/shop-items/shop-items.service';
 
 @Component({
   selector: 'app-shop-items-list',
@@ -24,7 +24,7 @@ export class ShopItemsListComponent implements OnInit {
           this.items.set(items);
           this.loading.set(false);
         },
-        error: (err) => {
+        error: (err: unknown) => {
           console.error(err);
           this.error.set('Nie udało się pobrać listy przedmiotów.');
           this.loading.set(false);

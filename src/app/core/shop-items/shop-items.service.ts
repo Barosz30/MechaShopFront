@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map, Observable, throwError } from 'rxjs';
 
 export interface ShopItemDetails {
   id: number;
@@ -24,6 +24,7 @@ export interface ShopItem {
   isAvailable: boolean;
   details?: ShopItemDetails;
   category?: ShopItemCategory;
+  imageUrl?: string;
 }
 
 export interface GetShopItemsFilter {
@@ -68,6 +69,7 @@ interface GetShopItemsResponse {
 export class ShopItemsService {
   private readonly http = inject(HttpClient);
   private readonly graphqlUrl = 'https://mechanicalshopbackend.onrender.com/graphql';
+  // REST API backend (Nest) – używa tego samego base URL co GraphQL
   private readonly restBaseUrl = 'https://mechanicalshopbackend.onrender.com';
 
   getItem(id: number): Observable<ShopItem> {
@@ -80,6 +82,7 @@ export class ShopItemsService {
           price
           description
           isAvailable
+          imageUrl
           details {
             id
             manufacturer
@@ -111,6 +114,7 @@ export class ShopItemsService {
           name
           price
           isAvailable
+          imageUrl
         }
       }
     `;
@@ -129,7 +133,19 @@ export class ShopItemsService {
 
     return this.http
       .post<{ imageUrl: string }>(`${this.restBaseUrl}/upload`, formData)
-      .pipe(map((res) => res.imageUrl));
+      .pipe(
+        map((res) => res.imageUrl),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Błąd uploadu obrazka:', {
+            status: error.status,
+            statusText: error.statusText,
+            url: error.url,
+            body: error.error,
+            message: error.message
+          });
+          return throwError(() => error);
+        })
+      );
   }
 
   createItem(input: CreateShopItemInput): Observable<ShopItem> {
@@ -155,4 +171,3 @@ export class ShopItemsService {
       .pipe(map((res) => res.data.createShopItem));
   }
 }
-
