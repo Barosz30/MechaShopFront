@@ -1,0 +1,28 @@
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771502991760},"timestamp":1771502991760,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503028579},"timestamp":1771503028579,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"home.ts:18","message":"HomeComponent constructor","data":{"timestamp":1771503028588},"timestamp":1771503028588,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503167421},"timestamp":1771503167421,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"home.ts:18","message":"HomeComponent constructor","data":{"timestamp":1771503167431},"timestamp":1771503167431,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"server.ts:55","message":"SSR request received","data":{"url":"/","method":"GET","timestamp":1771503251899},"timestamp":1771503251899,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503252515},"timestamp":1771503252515,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"home.ts:18","message":"HomeComponent constructor","data":{"timestamp":1771503252565},"timestamp":1771503252565,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"server.ts:61","message":"SSR response ready","data":{"hasResponse":true,"url":"/"},"timestamp":1771503252613,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"server.ts:55","message":"SSR request received","data":{"url":"/","method":"GET","timestamp":1771503516543},"timestamp":1771503516544,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503516558},"timestamp":1771503516558,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"home.ts:18","message":"HomeComponent constructor","data":{"timestamp":1771503516572},"timestamp":1771503516572,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"server.ts:61","message":"SSR response ready","data":{"hasResponse":true,"url":"/"},"timestamp":1771503516595,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"server.ts:55","message":"SSR request received","data":{"url":"/","method":"GET","timestamp":1771503666701},"timestamp":1771503666701,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503666770},"timestamp":1771503666770,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"home.ts:18","message":"HomeComponent constructor","data":{"timestamp":1771503666779},"timestamp":1771503666779,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"server.ts:61","message":"SSR response ready","data":{"hasResponse":true,"url":"/"},"timestamp":1771503666808,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"server.ts:55","message":"SSR request received","data":{"url":"/","method":"GET","timestamp":1771503691049},"timestamp":1771503691049,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503691598},"timestamp":1771503691598,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"home.ts:18","message":"HomeComponent constructor","data":{"timestamp":1771503691634},"timestamp":1771503691634,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"server.ts:61","message":"SSR response ready","data":{"hasResponse":true,"url":"/"},"timestamp":1771503691667,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"server.ts:55","message":"SSR request received","data":{"url":"/","method":"GET","timestamp":1771503693778},"timestamp":1771503693778,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503693790},"timestamp":1771503693790,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"home.ts:18","message":"HomeComponent constructor","data":{"timestamp":1771503693799},"timestamp":1771503693799,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"server.ts:61","message":"SSR response ready","data":{"hasResponse":true,"url":"/"},"timestamp":1771503693814,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"server.ts:55","message":"SSR request received","data":{"url":"/items/new","method":"GET","timestamp":1771503699675},"timestamp":1771503699675,"runId":"run2","hypothesisId":"E"}
+{"sessionId":"260e7d","location":"app.ts:12","message":"App component constructor","data":{"timestamp":1771503699687},"timestamp":1771503699688,"runId":"run2","hypothesisId":"C"}
+{"sessionId":"260e7d","location":"server.ts:61","message":"SSR response ready","data":{"hasResponse":true,"url":"/items/new"},"timestamp":1771503699809,"runId":"run2","hypothesisId":"E"}

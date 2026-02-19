@@ -42,6 +42,9 @@ export class ItemCreateComponent {
   }
 
   async onSubmit() {
+    // #region agent log
+    fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'item-create.ts:44',message:'onSubmit called',data:{formValid:this.form.valid,loading:this.loading()},timestamp:Date.now(),runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -54,8 +57,14 @@ export class ItemCreateComponent {
       let imageUrl: string | undefined;
 
       const file = this.selectedFile();
+      // #region agent log
+      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'item-create.ts:57',message:'Before uploadImage',data:{hasFile:!!file,fileName:file?.name},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
       if (file) {
         imageUrl = await lastValueFrom<string>(this.shopItemsService.uploadImage(file));
+        // #region agent log
+        fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'item-create.ts:60',message:'After uploadImage success',data:{imageUrl},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
       }
 
       const raw = this.form.getRawValue();
@@ -67,26 +76,57 @@ export class ItemCreateComponent {
         imageUrl,
         categoryId: raw.categoryId ?? undefined
       };
+      
+      // Loguj input przed wysłaniem (tylko w trybie deweloperskim)
+      console.log('Input object przed wysłaniem:', JSON.stringify(input, null, 2));
+      
+      // #region agent log
+      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'item-create.ts:71',message:'Before createItem',data:{input},timestamp:Date.now(),runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
 
       const created = await lastValueFrom<ShopItem>(this.shopItemsService.createItem(input));
+      // #region agent log
+      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'item-create.ts:74',message:'After createItem success',data:{createdId:created?.id},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
 
       this.loading.set(false);
       // Przekieruj na stronę szczegółów nowo utworzonego przedmiotu
       await this.router.navigate(['/item', created.id]);
     } catch (e: any) {
+      // #region agent log
+      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'item-create.ts:77',message:'Error caught in onSubmit',data:{errorType:typeof e,errorStatus:e?.status,errorMessage:e?.message,errorBody:e?.error,hasErrors:e?.error?.errors},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
       console.error('Błąd podczas tworzenia przedmiotu:', e);
+      console.error('Pełny obiekt błędu:', JSON.stringify(e, null, 2));
       this.loading.set(false);
       
       // Wyświetl bardziej szczegółowy komunikat błędu
-      if (e?.error?.message) {
-        this.error.set(`Błąd: ${e.error.message}`);
+      let errorMessage = 'Nie udało się utworzyć przedmiotu.';
+      
+      if (e?.error?.errors && Array.isArray(e.error.errors)) {
+        // GraphQL errors w odpowiedzi HTTP
+        const graphqlError = e.error.errors[0];
+        errorMessage = `Błąd GraphQL: ${graphqlError?.message || JSON.stringify(graphqlError)}`;
+        if (graphqlError?.extensions) {
+          console.error('GraphQL Error Extensions:', graphqlError.extensions);
+        }
+      } else if (e?.error?.message) {
+        errorMessage = `Błąd: ${e.error.message}`;
       } else if (e?.message) {
-        this.error.set(`Błąd: ${e.message}`);
+        errorMessage = `Błąd: ${e.message}`;
       } else if (e?.status === 0) {
-        this.error.set('Nie można połączyć się z serwerem. Sprawdź czy backend działa na http://localhost:3000');
-      } else {
-        this.error.set('Nie udało się utworzyć przedmiotu.');
+        errorMessage = 'Nie można połączyć się z serwerem. Sprawdź czy backend działa.';
+      } else if (e?.status === 400) {
+        errorMessage = `Błąd 400 Bad Request. Sprawdź konsolę przeglądarki (F12) aby zobaczyć szczegóły.`;
+        if (e?.error) {
+          console.error('Szczegóły błędu 400:', e.error);
+        }
       }
+      
+      this.error.set(errorMessage);
+      // #region agent log
+      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'item-create.ts:90',message:'After error handling',data:{errorSignal:this.error(),loadingSignal:this.loading()},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
     }
   }
 }

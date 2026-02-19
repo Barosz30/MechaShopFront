@@ -18,6 +18,15 @@
       class="item-card"
       *ngFor="let item of items()"
       [routerLink]="['/item', item.id]">
+      <div class="item-image-container" *ngIf="getThumbnailUrl(item.imageUrl)">
+        <img 
+          [src]="getThumbnailUrl(item.imageUrl)!" 
+          [alt]="item.name"
+          class="item-thumbnail"
+          loading="lazy"
+          (error)="onImageError($event, item)"
+          (load)="onImageLoad($event, item)">
+      </div>
       <div class="item-header">
         <h3>{{ item.name }}</h3>
       </div>
@@ -33,6 +42,31 @@
         </span>
       </div>
     </a>
+  </div>
+
+  <!-- Paginacja -->
+  <div class="pagination-container" *ngIf="!loading() && !error() && items().length > 0">
+    <div class="pagination">
+      <button 
+        class="pagination-btn"
+        [class.disabled]="currentPage() === 1"
+        [disabled]="currentPage() === 1"
+        (click)="previousPage()">
+        ← Poprzednia
+      </button>
+      
+      <div class="pagination-info">
+        Strona {{ currentPage() }}
+      </div>
+      
+      <button 
+        class="pagination-btn"
+        [class.disabled]="!hasMoreItems()"
+        [disabled]="!hasMoreItems()"
+        (click)="nextPage()">
+        Następna →
+      </button>
+    </div>
   </div>
 </div>
 

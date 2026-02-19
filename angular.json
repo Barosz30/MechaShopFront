@@ -33,13 +33,13 @@
               "src/styles.scss"
             ],
             "server": "src/main.server.ts",
-            "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
             }
           },
           "configurations": {
             "production": {
+              "outputMode": "server",
               "budgets": [
                 {
                   "type": "initial",
@@ -55,6 +55,7 @@
               "outputHashing": "all"
             },
             "development": {
+              "outputMode": "static",
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
