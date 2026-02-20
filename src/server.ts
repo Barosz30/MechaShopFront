@@ -19,8 +19,8 @@ app.use((req, res, next) => {
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com; " +
     "style-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' data: https://lh3.googleusercontent.com https://imagedelivery.net https://res.cloudinary.com https://*.cloudinary.com; " +
-    "connect-src 'self' http://localhost:3000 http://localhost:4200 ws://localhost:4200 https://accounts.google.com https://oauth2.googleapis.com https://mechanicalshopbackend.onrender.com; " +
+    "img-src 'self' data: https://lh3.googleusercontent.com https://imagedelivery.net https://res.cloudinary.com https://*.cloudinary.com https://images.unsplash.com; " +
+    "connect-src 'self' http://localhost:3000 http://localhost:4200 ws://localhost:4200 http://127.0.0.1:7389 https://accounts.google.com https://oauth2.googleapis.com https://mechanicalshopbackend.onrender.com; " +
     "frame-src 'self' https://accounts.google.com;"
   );
   next();
@@ -50,31 +50,18 @@ app.use((req, res, next) => {
   const isStaticFile = staticFileExtensions.some(ext => req.url.endsWith(ext));
   
   if (isStaticFile) {
-    // #region agent log
-    fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'server.ts:50',message:'Skipping SSR for static file',data:{url:req.url},timestamp:Date.now(),runId:'run2',hypothesisId:'E'})}).catch(()=>{});
-    // #endregion
     return next(); // Przekaż do następnego middleware (express.static powinien to obsłużyć)
   }
 
-  // #region agent log
-  const logData = {url: req.url, method: req.method, timestamp: Date.now()};
-  fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'server.ts:55',message:'SSR request received',data:logData,timestamp:Date.now(),runId:'run2',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
   angularApp
     .handle(req)
     .then((response) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'server.ts:61',message:'SSR response ready',data:{hasResponse:!!response,url:req.url},timestamp:Date.now(),runId:'run2',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       if (response) {
         // Standardowa odpowiedź SSR
         return writeResponseToNodeResponse(response, res);
       }
 
       // Fallback: zwróć index.html z buildu przeglądarkowego
-      // #region agent log
-      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'server.ts:69',message:'SSR fallback to index.html',data:{url:req.url},timestamp:Date.now(),runId:'run2',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       const indexPath = join(browserDistFolder, 'index.html');
       return res.sendFile(indexPath, (err) => {
         if (err) {
@@ -84,9 +71,6 @@ app.use((req, res, next) => {
       });
     })
     .catch((err) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'server.ts:77',message:'SSR error',data:{error:err?.message,url:req.url},timestamp:Date.now(),runId:'run2',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       next(err);
     });
 });

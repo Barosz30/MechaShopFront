@@ -8,20 +8,34 @@
   </div>
 
   <ng-container *ngIf="!loading() && !error() && item() as item">
+    <button (click)="goBack()" class="back-btn">
+      <span class="back-icon">←</span>
+      <span>Wróć</span>
+    </button>
+
     <section class="item-image-section" *ngIf="item.imageUrl && !imageLoadError()">
-      <img
-        [src]="item.imageUrl"
-        [alt]="item.name"
-        (error)="onImageError()"
-        class="item-detail-image"
-      />
+      <div 
+        class="item-image-container"
+        #imageContainer
+        (mousemove)="onImageMouseMove($event, imageContainer)"
+        (mouseleave)="onImageMouseLeave(imageContainer)">
+        <img
+          [src]="item.imageUrl"
+          [alt]="item.name"
+          (error)="onImageError()"
+          (load)="onImageLoad()"
+          class="item-detail-image"
+          [class.loaded]="imageLoaded()"
+        />
+        <div class="item-image-skeleton" *ngIf="!imageLoaded()" aria-hidden="true"></div>
+      </div>
     </section>
     <section class="item-header">
       <h1>{{ item.name }}</h1>
       <div class="price-availability">
         <span class="price">{{ item.price | currency:'PLN':'symbol':'1.0-0' }}</span>
         <span
-          class="availability"
+          class="availability-badge"
           [class.available]="item.isAvailable"
           [class.unavailable]="!item.isAvailable">
           {{ item.isAvailable ? 'Dostępny' : 'Niedostępny' }}
@@ -60,8 +74,6 @@
         <p>{{ item.category.name }}</p>
       </div>
     </section>
-
-    <a routerLink="/" class="back-link">← Wróć na stronę główną</a>
   </ng-container>
 </div>
 

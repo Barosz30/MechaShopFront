@@ -1,66 +1,66 @@
-import { NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { Category, ShopItemsService } from '../../core/shop-items/shop-items.service';
 
-interface Category {
-  name: string;
-  count: number;
-  icon: string;
-  image: string;
+interface CategoryWithCount extends Category {
+  itemCount?: number;
 }
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgOptimizedImage],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  categories = signal<CategoryWithCount[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
 
-  constructor() {
-    // #region agent log
-    fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'home.ts:18',message:'HomeComponent constructor',data:{timestamp:Date.now()},timestamp:Date.now(),runId:'run2',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
+  constructor(private readonly shopItemsService: ShopItemsService) {
   }
 
-  categories: Category[] = [
-    {
-      name: 'Rowery i Akcesoria',
-      count: 124,
-      icon: 'fas fa-bicycle',
-      image: 'images/bike.webp'
-    },
-    {
-      name: 'Części zamienne',
-      count: 850,
-      icon: 'fas fa-cogs',
-      image: 'images/screws.webp'
-    },
-    {
-      name: 'Skutery Elektryczne',
-      count: 12,
-      icon: 'fas fa-bolt',
-      image: 'images/scooter.webp'
-    },
-    {
-      name: 'Śruby i Łączniki',
-      count: 2300,
-      icon: 'fas fa-screwdriver',
-      image: 'images/screws.webp'
-    },
-    {
-      name: 'Oleje i Chemia',
-      count: 45,
-      icon: 'fas fa-oil-can',
-      image: 'images/oil.webp'
-    },
-    {
-      name: 'Odzież Ochronna',
-      count: 88,
-      icon: 'fas fa-hard-hat',
-      image: 'images/protective-gear.webp'
-    }
-  ];
+  ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    
+    this.shopItemsService.getCategories().subscribe({
+      next: (categories) => {
+        // Sprawdź czy kategorie nie są puste
+        if (!categories || categories.length === 0) {
+          console.warn('Otrzymano pustą listę kategorii');
+          this.error.set('Brak dostępnych kategorii.');
+          this.categories.set([]);
+          this.loading.set(false);
+          return;
+        }
+        
+        // Pobierz liczbę produktów dla każdej kategorii
+        const categoriesWithCounts = categories.map(cat => ({
+          ...cat,
+          itemCount: 0 // Będzie zaktualizowane później jeśli potrzebne
+        }));
+        this.categories.set(categoriesWithCounts);
+        this.loading.set(false);
+        this.error.set(null); // Wyczyść błąd jeśli wszystko OK
+      },
+      error: (err: unknown) => {
+        console.error('Błąd pobierania kategorii:', err);
+        const errorMessage = err instanceof Error 
+          ? err.message 
+          : 'Nie udało się pobrać kategorii.';
+        this.error.set(errorMessage);
+        this.categories.set([]); // Upewnij się że tablica jest pusta przy błędzie
+        this.loading.set(false);
+      }
+    });
+  }
 
   handleMouseMove(event: MouseEvent, card: HTMLElement) {
     const rect = card.getBoundingClientRect();

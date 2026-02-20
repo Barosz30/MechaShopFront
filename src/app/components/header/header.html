@@ -1,9 +1,13 @@
 <header class="navbar">
   <div class="logo" routerLink="/">Warsztat 🚗</div>
 
-  <nav>
+  <nav class="nav-center">
     <a routerLink="/">Start</a>
+    <a routerLink="/items">Wszystkie</a>
+    <a routerLink="/items/new" class="nav-btn-primary">Dodaj nowy</a>
+  </nav>
 
+  <div class="nav-right">
     @if (authService.currentUser(); as user) {
       <div class="user-menu">
         <div class="avatar" [title]="user.username">
@@ -19,7 +23,7 @@
         Zaloguj
       </button>
     }
-  </nav>
+  </div>
 </header>
 
 @if (isModalOpen()) {

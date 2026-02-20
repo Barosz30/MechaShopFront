@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ShopItem, ShopItemsService } from '../../core/shop-items/shop-items.service';
 
 @Component({
@@ -26,17 +26,53 @@ export class ShopItemsListComponent implements OnInit {
   /** ID przedmiotów, dla których obrazek już się załadował (ukrycie skeletona) */
   loadedImageIds = signal<Set<number>>(new Set());
 
-  constructor(private readonly shopItemsService: ShopItemsService) {}
+  constructor(
+    private readonly shopItemsService: ShopItemsService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadItems();
+    // Odczytywanie numeru strony i categoryId z query params
+    this.route.queryParams.subscribe(params => {
+      const page = params['page'] ? Number(params['page']) : 1;
+      if (page !== this.currentPage()) {
+        this.currentPage.set(page);
+      }
+      
+      // Jeśli nie ma query params, zaktualizuj URL aby pokazać że jesteśmy na stronie 1
+      if (!params['page']) {
+        const queryParams: any = { page: 1 };
+        if (params['categoryId']) {
+          queryParams.categoryId = params['categoryId'];
+        }
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams,
+          queryParamsHandling: 'merge',
+          replaceUrl: true // Użyj replaceUrl żeby nie dodawać wpisu do historii
+        });
+      }
+      
+      this.loadItems();
+    });
   }
 
   loadItems(): void {
     this.loading.set(true);
     const offset = (this.currentPage() - 1) * this.itemsPerPage;
     
-    this.shopItemsService.getItems({ limit: this.itemsPerPage, offset })
+    // Pobierz categoryId z query params
+    const categoryId = this.route.snapshot.queryParams['categoryId'] 
+      ? Number(this.route.snapshot.queryParams['categoryId']) 
+      : undefined;
+    
+    const filter: any = { limit: this.itemsPerPage, offset };
+    if (categoryId) {
+      filter.categoryId = categoryId;
+    }
+    
+    this.shopItemsService.getItems(filter)
       .subscribe({
         next: (items) => {
           this.items.set(items);
@@ -59,6 +95,17 @@ export class ShopItemsListComponent implements OnInit {
     if (page === this.currentPage()) return;
     
     this.currentPage.set(page);
+    // Aktualizuj URL z query parameter, zachowując categoryId jeśli istnieje
+    const queryParams: any = { page: page };
+    const categoryId = this.route.snapshot.queryParams['categoryId'];
+    if (categoryId) {
+      queryParams.categoryId = categoryId;
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
+    });
     this.loadItems();
     // Przewiń do góry strony
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -135,6 +182,42 @@ export class ShopItemsListComponent implements OnInit {
       next.add(item.id);
       return next;
     });
+  }
+
+  onImageMouseMove(event: MouseEvent, container: HTMLElement): void {
+    const rect = container.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    container.style.setProperty('--mouse-x', `${x}px`);
+    container.style.setProperty('--mouse-y', `${y}px`);
+  }
+
+  onImageMouseLeave(container: HTMLElement): void {
+    container.style.removeProperty('--mouse-x');
+    container.style.removeProperty('--mouse-y');
+  }
+
+  /**
+   * Zwraca aktualne query params do przekazania w state przy nawigacji
+   */
+  getCurrentQueryParams(): { page?: number; categoryId?: number } {
+    const params: { page?: number; categoryId?: number } = {};
+    const queryParams = this.route.snapshot.queryParams;
+    
+    if (queryParams['page']) {
+      params.page = Number(queryParams['page']);
+    }
+    
+    if (queryParams['categoryId']) {
+      params.categoryId = Number(queryParams['categoryId']);
+    }
+    
+    return params;
+  }
+
+  goBack(): void {
+    this.router.navigate(['/']);
   }
 }
 

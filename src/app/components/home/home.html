@@ -19,30 +19,41 @@
   <section class="categories">
     <div class="section-header">
       <h2>Popularne Kategorie</h2>
-      <a href="#" class="view-all-link">Zobacz wszystkie</a>
+      <a routerLink="/items" class="view-all-link">Zobacz wszystkie</a>
     </div>
 
-    <div class="category-grid">
-      @for (cat of categories; track cat.name) {
-        <div class="category-card"
-             #card
-             (mousemove)="handleMouseMove($event, card)">
-             <img [ngSrc]="cat.image"
-                alt="{{ cat.name }} tło"
-                fill
-                priority> <div class="card-overlay"></div>
-            <div class="spotlight"></div>
+    <div *ngIf="loading()" class="state-message">
+      Ładowanie kategorii...
+    </div>
 
-          <div class="content-wrapper"> <div class="icon-wrapper">
-              <i [class]="cat.icon"></i>
-            </div>
+    <div *ngIf="error()" class="state-message error">
+      {{ error() }}
+      <button (click)="loadCategories()" class="retry-button" style="margin-top: 10px; padding: 8px 16px; background: rgba(0, 212, 255, 0.2); border: 1px solid #00d4ff; color: #00d4ff; border-radius: 8px; cursor: pointer;">
+        Spróbuj ponownie
+      </button>
+    </div>
+
+    <div class="category-grid" *ngIf="!loading() && !error() && categories().length > 0">
+      @for (cat of categories(); track cat.id) {
+        <a [routerLink]="['/items']" [queryParams]="{ categoryId: cat.id }" 
+           class="category-card"
+           #card
+           (mousemove)="handleMouseMove($event, card)">
+          <div class="card-overlay"></div>
+          <div class="spotlight"></div>
+
+          <div class="content-wrapper">
             <div class="card-content">
               <h3>{{ cat.name }}</h3>
-              <p>{{ cat.count }} produktów</p>
+              <p *ngIf="cat.description">{{ cat.description }}</p>
             </div>
           </div>
-        </div>
+        </a>
       }
+    </div>
+
+    <div *ngIf="!loading() && !error() && categories().length === 0" class="state-message">
+      Brak dostępnych kategorii.
     </div>
   </section>
 

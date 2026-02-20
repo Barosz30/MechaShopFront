@@ -1,4 +1,9 @@
 <div class="shop-items-list-container">
+  <button (click)="goBack()" class="back-btn">
+    <span class="back-icon">←</span>
+    <span>Wróć</span>
+  </button>
+
   <h2>Przedmioty w sklepie</h2>
 
   <div *ngIf="loading()" class="state-message">
@@ -17,8 +22,14 @@
     <a
       class="item-card"
       *ngFor="let item of items()"
-      [routerLink]="['/item', item.id]">
-      <div class="item-image-container" *ngIf="getThumbnailUrl(item.imageUrl) && !failedImageIds().has(item.id)">
+      [routerLink]="['/item', item.id]"
+      [state]="getCurrentQueryParams()">
+      <div 
+        class="item-image-container" 
+        *ngIf="getThumbnailUrl(item.imageUrl) && !failedImageIds().has(item.id)"
+        #imageContainer
+        (mousemove)="onImageMouseMove($event, imageContainer)"
+        (mouseleave)="onImageMouseLeave(imageContainer)">
         <img 
           [src]="getThumbnailUrl(item.imageUrl)!" 
           [alt]="item.name"
@@ -37,7 +48,7 @@
           {{ item.price | currency:'PLN':'symbol':'1.0-0' }}
         </span>
         <span
-          class="availability"
+          class="availability-badge"
           [class.available]="item.isAvailable"
           [class.unavailable]="!item.isAvailable">
           {{ item.isAvailable ? 'Dostępny' : 'Niedostępny' }}
@@ -50,9 +61,8 @@
   <div class="pagination-container" *ngIf="!loading() && !error() && items().length > 0">
     <div class="pagination">
       <button 
+        *ngIf="currentPage() > 1"
         class="pagination-btn"
-        [class.disabled]="currentPage() === 1"
-        [disabled]="currentPage() === 1"
         (click)="previousPage()">
         ← Poprzednia
       </button>
@@ -62,9 +72,8 @@
       </div>
       
       <button 
+        *ngIf="hasMoreItems()"
         class="pagination-btn"
-        [class.disabled]="!hasMoreItems()"
-        [disabled]="!hasMoreItems()"
         (click)="nextPage()">
         Następna →
       </button>

@@ -1,1 +1,297 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================
+   GLOBAL STYLES & DESIGN SYSTEM
+   ============================================ */
+
+/* Import global variables and mixins */
+@use './styles/variables' as *;
+@use './styles/mixins' as *;
+@use './styles/utilities' as *;
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   GLOBAL COMPONENT STYLES
+   ============================================ */
+
+/* State Messages - used across all components */
+.state-message {
+  padding: var(--spacing-md);
+  text-align: center;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  
+  &.error {
+    color: var(--color-error);
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+  }
+  
+  &.loading {
+    color: var(--color-text-secondary);
+  }
+  
+  &.success {
+    color: var(--color-success);
+    background: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+  }
+}
+
+/* Buttons - global button styles */
+.btn {
+  @include button-base;
+  
+  &-primary {
+    @include button-primary;
+  }
+  
+  &-secondary {
+    @include button-secondary;
+  }
+  
+  &-glass {
+    @include button-glass;
+  }
+  
+  &:disabled,
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* Cards - reusable card component */
+.card {
+  @include card-base;
+  
+  &-hover {
+    @include card-hover;
+  }
+  
+  &-glass {
+    @include card-glass;
+  }
+}
+
+/* Skeletons - loading placeholders */
+.skeleton {
+  @include skeleton-base;
+  
+  &-image {
+    @include skeleton-image;
+  }
+  
+  &-text {
+    @include skeleton-text;
+  }
+  
+  &-button {
+    @include skeleton-button;
+  }
+}
+
+/* Image containers with floating effect */
+.image-container {
+  position: relative;
+  overflow: hidden;
+  
+  img {
+    transition: transform var(--transition-slow);
+  }
+  
+  &:hover img {
+    transform: scale(1.05) translateY(-2px);
+  }
+  
+  &.floating {
+    img {
+      animation: float-image var(--animation-duration-slow) ease-in-out infinite;
+    }
+  }
+}
+
+/* Availability badges */
+.availability-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  &.available {
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
+    border: 1px solid var(--color-success-border);
+  }
+  
+  &.unavailable {
+    background: var(--color-error-bg);
+    color: var(--color-error-text);
+    border: 1px solid var(--color-error-border);
+  }
+}
+
+/* Price display */
+.price {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-success);
+  
+  &-large {
+    font-size: var(--font-size-xl);
+  }
+  
+  &-medium {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  
+  &:hover {
+    color: var(--color-primary-hover);
+  }
+}
+
+/* ============================================
+   GLOBAL ANIMATIONS
+   ============================================ */
+
+@keyframes float-image {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--color-primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--color-primary-glow), 0 0 60px var(--color-primary-glow);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+.mt-5 { margin-top: var(--spacing-xl); }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.mb-5 { margin-bottom: var(--spacing-xl); }

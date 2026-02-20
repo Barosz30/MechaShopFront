@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, of, retry, shareReplay, throwError, timer } from 'rxjs';
 import {
+  Category,
   CreateShopItemInput,
   GetShopItemsFilterInput,
   ItemTypes,
@@ -9,7 +10,14 @@ import {
 } from './generated/graphql';
 
 export { ItemTypes };
-export type { CreateShopItemInput, ShopItem };
+export type { Category, CreateShopItemInput, ShopItem };
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minut
 
 interface CreateShopItemResponse {
   data: {
@@ -29,6 +37,12 @@ interface GetShopItemsResponse {
   };
 }
 
+interface GetCategoriesResponse {
+  data: {
+    categories: Category[];
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,7 +52,65 @@ export class ShopItemsService {
   // REST API backend (Nest) – używa tego samego base URL co GraphQL
   private readonly restBaseUrl = 'https://mechanicalshopbackend.onrender.com';
 
+  // Cache dla list przedmiotów - klucz to stringified filter
+  private readonly itemsCache = new Map<string, CacheEntry<ShopItem[]>>();
+  
+  // Cache dla pojedynczych przedmiotów - klucz to ID
+  private readonly itemCache = new Map<number, CacheEntry<ShopItem>>();
+  
+  // Cache dla kategorii
+  private categoriesCache$: Observable<Category[]> | null = null;
+
+  /**
+   * Generuje klucz cache na podstawie parametrów filtrowania
+   */
+  private getCacheKey(filter?: GetShopItemsFilterInput): string {
+    if (!filter) {
+      return 'all';
+    }
+    const parts: string[] = [];
+    if (filter.categoryId !== undefined) parts.push(`cat:${filter.categoryId}`);
+    if (filter.limit !== undefined) parts.push(`limit:${filter.limit}`);
+    if (filter.offset !== undefined) parts.push(`offset:${filter.offset}`);
+    if (filter.minPrice !== undefined) parts.push(`minPrice:${filter.minPrice}`);
+    if (filter.maxPrice !== undefined) parts.push(`maxPrice:${filter.maxPrice}`);
+    if (filter.search) parts.push(`search:${filter.search}`);
+    return parts.length > 0 ? parts.join('|') : 'all';
+  }
+
+  /**
+   * Sprawdza czy cache entry jest nadal ważny
+   */
+  private isCacheValid<T>(entry: CacheEntry<T> | undefined): boolean {
+    if (!entry) return false;
+    return Date.now() - entry.timestamp < CACHE_TTL;
+  }
+
+  /**
+   * Czyści cache list przedmiotów
+   */
+  private clearItemsCache(): void {
+    this.itemsCache.clear();
+  }
+
+  /**
+   * Czyści cache pojedynczego przedmiotu
+   */
+  private clearItemCache(id?: number): void {
+    if (id) {
+      this.itemCache.delete(id);
+    } else {
+      this.itemCache.clear();
+    }
+  }
+
   getItem(id: number): Observable<ShopItem> {
+    // Sprawdź cache
+    const cached = this.itemCache.get(id);
+    if (this.isCacheValid(cached)) {
+      return of(cached!.data);
+    }
+
     const query = `
       query GetShopItem($id: Int!) {
         shopItem(id: $id) {
@@ -74,12 +146,104 @@ export class ShopItemsService {
           if (!res?.data?.shopItem) {
             throw new Error('Brak danych z API (shopItem).');
           }
+          // Zapisz w cache
+          this.itemCache.set(id, {
+            data: res.data.shopItem,
+            timestamp: Date.now()
+          });
           return res.data.shopItem;
         })
       );
   }
 
-  getItems(filter?: GetShopItemsFilterInput): Observable<ShopItem[]> {
+  getCategories(): Observable<Category[]> {
+    // Użyj shareReplay do cache'owania Observable
+    if (!this.categoriesCache$) {
+      const query = `
+        query GetCategories {
+          categories {
+            id
+            name
+            description
+          }
+        }
+      `;
+
+      this.categoriesCache$ = this.http
+        .post<GetCategoriesResponse>(this.graphqlUrl, {
+          query
+        })
+        .pipe(
+          // Retry dla błędów sieciowych (3 próby z opóźnieniem)
+          retry({
+            count: 3,
+            delay: (error: HttpErrorResponse, retryCount: number) => {
+              // Retry tylko dla błędów sieciowych (5xx, timeout, network errors)
+              if (error instanceof HttpErrorResponse) {
+                const status = error.status;
+                // Nie retry dla błędów 4xx (client errors)
+                if (status >= 400 && status < 500) {
+                  return throwError(() => error);
+                }
+              }
+              // Opóźnienie zwiększa się z każdą próbą: 1s, 2s, 3s
+              // timer zwraca Observable<number>, co jest prawidłowym ObservableInput
+              return timer(1000 * retryCount);
+            }
+          }),
+          map((res) => {
+            // Sprawdź czy odpowiedź zawiera błędy GraphQL
+            if ((res as any).errors) {
+              console.error('GraphQL Errors:', (res as any).errors);
+              throw new Error((res as any).errors[0]?.message || 'Błąd pobierania kategorii');
+            }
+            
+            if (!res?.data) {
+              console.warn('Brak danych w odpowiedzi API dla kategorii');
+              throw new Error('Brak danych z API');
+            }
+            
+            const categories = res.data.categories;
+            if (!Array.isArray(categories)) {
+              console.warn('Kategorie nie są tablicą:', categories);
+              throw new Error('Nieprawidłowy format danych kategorii');
+            }
+            
+            return categories;
+          }),
+          catchError((error: HttpErrorResponse | Error) => {
+            console.error('Błąd pobierania kategorii:', error);
+            // Reset cache przy błędzie, aby umożliwić ponowną próbę
+            this.categoriesCache$ = null;
+            return throwError(() => {
+              // Zwróć bardziej szczegółowy błąd
+              if (error instanceof HttpErrorResponse) {
+                return new Error(`Nie udało się pobrać kategorii: ${error.status} ${error.statusText}`);
+              }
+              return error;
+            });
+          }),
+          shareReplay({ bufferSize: 1, refCount: false }) // Cache wynik przez shareReplay
+        );
+    }
+
+    return this.categoriesCache$;
+  }
+
+  getItems(filter?: GetShopItemsFilterInput, forceRefresh: boolean = false): Observable<ShopItem[]> {
+    const cacheKey = this.getCacheKey(filter);
+    
+    // Sprawdź cache - jeśli forceRefresh jest true lub cache nie istnieje/nieważny, pobierz z API
+    const cached = this.itemsCache.get(cacheKey);
+    if (!forceRefresh && this.isCacheValid(cached)) {
+      // Zwróć z cache tylko jeśli zawiera dane
+      // Jeśli cache jest pusty, zawsze sprawdź API (może pojawiły się nowe dane)
+      if (cached!.data.length > 0) {
+        return of(cached!.data);
+      }
+      // Jeśli cache jest pusty, zawsze pobierz z API aby upewnić się że nie ma nowych danych
+    }
+
     const query = `
       query GetShopItems($filter: GetShopItemsFilterInput) {
         shopItems(filter: $filter) {
@@ -103,7 +267,16 @@ export class ShopItemsService {
             return [];
           }
           const items = res.data.shopItems;
-          return Array.isArray(items) ? items : [];
+          const itemsArray = Array.isArray(items) ? items : [];
+          
+          // Zapisz w cache tylko jeśli otrzymaliśmy dane lub jeśli to prawidłowa pusta odpowiedź
+          // Nie cache'uj błędów jako pustych tablic
+          this.itemsCache.set(cacheKey, {
+            data: itemsArray,
+            timestamp: Date.now()
+          });
+          
+          return itemsArray;
         })
       );
   }
@@ -165,29 +338,26 @@ export class ShopItemsService {
       .post<CreateShopItemResponse | { errors?: any[] }>(this.graphqlUrl, payload)
       .pipe(
         map((res) => {
-          // #region agent log
-          fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'shop-items.service.ts:171',message:'GraphQL response received',data:{hasData:!!(res as any).data,hasErrors:!!(res as any).errors,errors:(res as any).errors,input},timestamp:Date.now(),runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-          // #endregion
           if ((res as any).errors) {
-            // #region agent log
-            fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'shop-items.service.ts:174',message:'GraphQL errors detected',data:{errors:(res as any).errors},timestamp:Date.now(),runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-            // #endregion
             console.error('GraphQL Errors:', (res as any).errors);
             throw new Error((res as any).errors[0]?.message || 'GraphQL error');
           }
           if (!(res as CreateShopItemResponse).data?.createShopItem) {
-            // #region agent log
-            fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'shop-items.service.ts:179',message:'No data.createShopItem in response',data:{response:res},timestamp:Date.now(),runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-            // #endregion
             throw new Error('No data returned from GraphQL mutation');
           }
-          return (res as CreateShopItemResponse).data.createShopItem;
+          const createdItem = (res as CreateShopItemResponse).data.createShopItem;
+          
+          // Wyczyść cache po utworzeniu nowego przedmiotu
+          this.clearItemsCache();
+          // Cache nowo utworzonego przedmiotu
+          this.itemCache.set(createdItem.id, {
+            data: createdItem,
+            timestamp: Date.now()
+          });
+          
+          return createdItem;
         }),
         catchError((error: HttpErrorResponse | Error) => {
-          // #region agent log
-          fetch('http://127.0.0.1:7389/ingest/d4bc3059-1bec-4ee6-bc32-5de3f01e7c26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'260e7d'},body:JSON.stringify({sessionId:'260e7d',location:'shop-items.service.ts:185',message:'createItem catchError',data:{errorType:typeof error,errorMessage:error instanceof Error ? error.message : error.message,errorStatus:error instanceof HttpErrorResponse ? error.status : undefined},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-          // #endregion
-          
           // Szczegółowe logowanie błędów HTTP
           if (error instanceof HttpErrorResponse) {
             console.error('HTTP Error Response:', {
@@ -209,5 +379,28 @@ export class ShopItemsService {
           return throwError(() => error);
         })
       );
+  }
+
+  /**
+   * Czyści cały cache przedmiotów
+   */
+  clearCache(): void {
+    this.clearItemsCache();
+    this.clearItemCache();
+    this.categoriesCache$ = null;
+  }
+
+  /**
+   * Czyści cache dla konkretnej kategorii
+   */
+  clearCategoryCache(categoryId: number): void {
+    // Usuń wszystkie wpisy cache zawierające tę kategorię
+    const keysToDelete: string[] = [];
+    for (const key of this.itemsCache.keys()) {
+      if (key.includes(`cat:${categoryId}`)) {
+        keysToDelete.push(key);
+      }
+    }
+    keysToDelete.forEach(key => this.itemsCache.delete(key));
   }
 }
