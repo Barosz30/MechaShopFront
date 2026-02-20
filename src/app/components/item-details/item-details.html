@@ -8,6 +8,14 @@
   </div>
 
   <ng-container *ngIf="!loading() && !error() && item() as item">
+    <section class="item-image-section" *ngIf="item.imageUrl && !imageLoadError()">
+      <img
+        [src]="item.imageUrl"
+        [alt]="item.name"
+        (error)="onImageError()"
+        class="item-detail-image"
+      />
+    </section>
     <section class="item-header">
       <h1>{{ item.name }}</h1>
       <div class="price-availability">

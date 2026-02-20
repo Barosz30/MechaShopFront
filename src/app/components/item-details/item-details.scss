@@ -8,6 +8,23 @@
   box-shadow: 0 24px 80px rgba(15, 23, 42, 0.7);
 }
 
+.item-image-section {
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.item-detail-image {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  max-height: 360px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
 .state-message {
   text-align: center;
   font-size: 1.1rem;

@@ -20,6 +20,12 @@ export class ShopItemsListComponent implements OnInit {
   itemsPerPage = 20;
   hasMoreItems = signal(true);
 
+  /** ID przedmiotów, dla których obrazek nie załadował się (błędny link) */
+  failedImageIds = signal<Set<number>>(new Set());
+
+  /** ID przedmiotów, dla których obrazek już się załadował (ukrycie skeletona) */
+  loadedImageIds = signal<Set<number>>(new Set());
+
   constructor(private readonly shopItemsService: ShopItemsService) {}
 
   ngOnInit(): void {
@@ -34,6 +40,8 @@ export class ShopItemsListComponent implements OnInit {
       .subscribe({
         next: (items) => {
           this.items.set(items);
+          this.failedImageIds.set(new Set());
+          this.loadedImageIds.set(new Set());
           // Jeśli zwrócono mniej niż limit, to znaczy że to ostatnia strona
           this.hasMoreItems.set(items.length === this.itemsPerPage);
           this.loading.set(false);
@@ -73,7 +81,7 @@ export class ShopItemsListComponent implements OnInit {
    * Cloudinary używa transformacji w ścieżce URL: /w_300,h_300,c_fill/
    * Cloudflare Images używa parametrów query string: ?w=300&h=300&fit=cover
    */
-  getThumbnailUrl(imageUrl: string | undefined): string | null {
+  getThumbnailUrl(imageUrl: string | null | undefined): string | null {
     if (!imageUrl) {
       return null;
     }
@@ -113,14 +121,20 @@ export class ShopItemsListComponent implements OnInit {
     return imageUrl;
   }
 
-  onImageError(event: Event, item: ShopItem): void {
-    // Obrazek nie załadował się - może być problem z CSP lub URL
-    const img = event.target as HTMLImageElement;
-    console.error(`Błąd ładowania obrazka dla "${item.name}"`, img.src);
+  onImageError(item: ShopItem): void {
+    this.failedImageIds.update((ids) => {
+      const next = new Set(ids);
+      next.add(item.id);
+      return next;
+    });
   }
 
-  onImageLoad(event: Event, item: ShopItem): void {
-    // Obrazek załadowany pomyślnie
+  onImageLoad(item: ShopItem): void {
+    this.loadedImageIds.update((ids) => {
+      const next = new Set(ids);
+      next.add(item.id);
+      return next;
+    });
   }
 }
 

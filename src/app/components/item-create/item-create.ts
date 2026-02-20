@@ -3,7 +3,12 @@ import { Component, signal, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
-import { CreateShopItemInput, ShopItem, ShopItemsService } from '../../core/shop-items/shop-items.service';
+import {
+  CreateShopItemInput,
+  ItemTypes,
+  ShopItem,
+  ShopItemsService
+} from '../../core/shop-items/shop-items.service';
 
 @Component({
   selector: 'app-item-create',
@@ -15,9 +20,11 @@ import { CreateShopItemInput, ShopItem, ShopItemsService } from '../../core/shop
 export class ItemCreateComponent {
   private readonly fb = inject(FormBuilder);
 
+  readonly itemTypes = Object.values(ItemTypes);
+
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
-    type: ['', [Validators.required]], // wpisujesz wartość enumu ItemTypes
+    type: [ItemTypes.Bike, [Validators.required]],
     price: [0, [Validators.required, Validators.min(0)]],
     description: [''],
     categoryId: [null as number | null]

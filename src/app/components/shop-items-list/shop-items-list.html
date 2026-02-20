@@ -18,14 +18,16 @@
       class="item-card"
       *ngFor="let item of items()"
       [routerLink]="['/item', item.id]">
-      <div class="item-image-container" *ngIf="getThumbnailUrl(item.imageUrl)">
+      <div class="item-image-container" *ngIf="getThumbnailUrl(item.imageUrl) && !failedImageIds().has(item.id)">
         <img 
           [src]="getThumbnailUrl(item.imageUrl)!" 
           [alt]="item.name"
           class="item-thumbnail"
+          [class.loaded]="loadedImageIds().has(item.id)"
           loading="lazy"
-          (error)="onImageError($event, item)"
-          (load)="onImageLoad($event, item)">
+          (error)="onImageError(item)"
+          (load)="onImageLoad(item)">
+        <div class="item-image-skeleton" *ngIf="!loadedImageIds().has(item.id)" aria-hidden="true"></div>
       </div>
       <div class="item-header">
         <h3>{{ item.name }}</h3>

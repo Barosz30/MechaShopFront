@@ -8,13 +8,12 @@
     </div>
 
     <div class="field">
-      <label for="type">Typ (ItemTypes)</label>
-      <input
-        id="type"
-        type="text"
-        formControlName="type"
-        placeholder="np. BIKE, PARTS – zgodnie z enumem backendu"
-      />
+      <label for="type">Typ</label>
+      <select id="type" formControlName="type">
+        @for (value of itemTypes; track value) {
+          <option [value]="value">{{ value }}</option>
+        }
+      </select>
     </div>
 
     <div class="field">

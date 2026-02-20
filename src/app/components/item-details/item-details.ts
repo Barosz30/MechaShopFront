@@ -15,6 +15,8 @@ export class ItemDetailsComponent implements OnInit {
   item = signal<ShopItem | null>(null);
   loading = signal(true);
   error = signal<string | null>(null);
+  /** true gdy obrazek produktu nie załadował się (błędny link) */
+  imageLoadError = signal(false);
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -30,6 +32,7 @@ export class ItemDetailsComponent implements OnInit {
       .subscribe({
         next: (item) => {
           this.item.set(item);
+          this.imageLoadError.set(false);
           this.loading.set(false);
         },
         error: (err) => {
@@ -38,6 +41,10 @@ export class ItemDetailsComponent implements OnInit {
           this.loading.set(false);
         }
       });
+  }
+
+  onImageError(): void {
+    this.imageLoadError.set(true);
   }
 }
 

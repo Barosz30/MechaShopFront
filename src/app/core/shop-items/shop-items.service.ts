@@ -1,49 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, map, Observable, throwError } from 'rxjs';
+import {
+  CreateShopItemInput,
+  GetShopItemsFilterInput,
+  ItemTypes,
+  ShopItem
+} from './generated/graphql';
 
-export interface ShopItemDetails {
-  id: number;
-  manufacturer: string;
-  material: string;
-  weight: number;
-  color: string;
-}
-
-export interface ShopItemCategory {
-  id: number;
-  name: string;
-}
-
-export interface ShopItem {
-  id: number;
-  name: string;
-  type: string;
-  price: number;
-  description?: string;
-  isAvailable: boolean;
-  details?: ShopItemDetails;
-  category?: ShopItemCategory;
-  imageUrl?: string;
-}
-
-export interface GetShopItemsFilter {
-  search?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  categoryId?: number;
-  limit?: number;
-  offset?: number;
-}
-
-export interface CreateShopItemInput {
-  name: string;
-  type: string;
-  price: number;
-  description?: string;
-  imageUrl?: string;
-  categoryId?: number;
-}
+export { ItemTypes };
+export type { CreateShopItemInput, ShopItem };
 
 interface CreateShopItemResponse {
   data: {
@@ -103,10 +69,17 @@ export class ShopItemsService {
         query,
         variables: { id }
       })
-      .pipe(map((res) => res.data.shopItem));
+      .pipe(
+        map((res) => {
+          if (!res?.data?.shopItem) {
+            throw new Error('Brak danych z API (shopItem).');
+          }
+          return res.data.shopItem;
+        })
+      );
   }
 
-  getItems(filter?: GetShopItemsFilter): Observable<ShopItem[]> {
+  getItems(filter?: GetShopItemsFilterInput): Observable<ShopItem[]> {
     const query = `
       query GetShopItems($filter: GetShopItemsFilterInput) {
         shopItems(filter: $filter) {
@@ -124,7 +97,15 @@ export class ShopItemsService {
         query,
         variables: { filter }
       })
-      .pipe(map((res) => res.data.shopItems));
+      .pipe(
+        map((res) => {
+          if (!res?.data) {
+            return [];
+          }
+          const items = res.data.shopItems;
+          return Array.isArray(items) ? items : [];
+        })
+      );
   }
 
   uploadImage(file: File): Observable<string> {

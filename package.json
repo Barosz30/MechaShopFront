@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:apka-testowa": "node dist/apka-testowa/server/server.mjs"
+    "serve:ssr:apka-testowa": "node dist/apka-testowa/server/server.mjs",
+    "codegen": "graphql-codegen"
   },
   "prettier": {
     "printWidth": 100,
@@ -41,6 +42,8 @@
     "@angular/build": "^21.0.5",
     "@angular/cli": "^21.0.5",
     "@angular/compiler-cli": "^21.0.0",
+    "@graphql-codegen/cli": "^6.1.1",
+    "@graphql-codegen/typescript": "^5.0.8",
     "@types/express": "^5.0.1",
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.17.19",
