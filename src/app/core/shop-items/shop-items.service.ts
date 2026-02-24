@@ -281,6 +281,19 @@ export class ShopItemsService {
       );
   }
 
+  /**
+   * Pobiera najdroższy produkt (do banera "Polecane").
+   * API nie obsługuje sortowania, więc pobierana jest partia i max wybierany po stronie klienta.
+   * Gdy backend doda np. sortBy: 'price', order: 'desc', można tu użyć getItems({ sortBy: 'price', order: 'desc', limit: 1 }).
+   */
+  getMostExpensiveItem(limit: number = 100): Observable<ShopItem | null> {
+    return this.getItems({ limit }).pipe(
+      map((items) =>
+        items.length > 0 ? items.reduce((a, b) => (b.price > a.price ? b : a)) : null
+      )
+    );
+  }
+
   uploadImage(file: File): Observable<string> {
     const formData = new FormData();
     formData.append('image', file);

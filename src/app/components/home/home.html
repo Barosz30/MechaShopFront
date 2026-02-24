@@ -57,15 +57,32 @@
     </div>
   </section>
 
-  <section class="featured-banner">
-    <div class="banner-glass">
-      <span class="badge">Polecane</span>
-      <h2>Skuter Elektryczny <span class="text-neon">X-200</span></h2>
-      <p>Zasięg 100km, napęd bezszczotkowy i system odzyskiwania energii.</p>
-      <div class="banner-footer">
-        <span class="price">4 299 PLN</span>
-        <button class="btn-glass">Sprawdź detale</button>
+  <section class="featured-banner" *ngIf="!featuredLoading() && featuredItem(); else featuredPlaceholder">
+    <a [routerLink]="['/item', featuredItem()!.id]" class="banner-link">
+      <div class="banner-glass">
+        <span class="badge">Polecane</span>
+        <div class="featured-content">
+          @if (featuredItem()?.imageUrl) {
+            <img [src]="featuredItem()!.imageUrl!" [alt]="featuredItem()!.name" class="featured-image" />
+          }
+          <div class="featured-text">
+            <h2>{{ featuredItem()!.name }}</h2>
+            <p *ngIf="featuredItem()!.description">{{ featuredItem()!.description }}</p>
+            <div class="banner-footer">
+              <span class="price">{{ formatPrice(featuredItem()!.price) }} PLN</span>
+              <span class="btn-glass">Sprawdź detale</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </a>
   </section>
+  <ng-template #featuredPlaceholder>
+    <section class="featured-banner" *ngIf="featuredLoading()">
+      <div class="banner-glass">
+        <span class="badge">Polecane</span>
+        <p class="state-message">Ładowanie polecanego produktu...</p>
+      </div>
+    </section>
+  </ng-template>
 </div>

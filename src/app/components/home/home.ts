@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Category, ShopItemsService } from '../../core/shop-items/shop-items.service';
+import { Category, ShopItem, ShopItemsService } from '../../core/shop-items/shop-items.service';
 
 interface CategoryWithCount extends Category {
   itemCount?: number;
@@ -18,12 +18,29 @@ export class HomeComponent implements OnInit {
   categories = signal<CategoryWithCount[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+  featuredItem = signal<ShopItem | null>(null);
+  featuredLoading = signal(true);
 
   constructor(private readonly shopItemsService: ShopItemsService) {
   }
 
   ngOnInit(): void {
     this.loadCategories();
+    this.loadFeaturedItem();
+  }
+
+  loadFeaturedItem(): void {
+    this.featuredLoading.set(true);
+    this.shopItemsService.getMostExpensiveItem(100).subscribe({
+      next: (item) => {
+        this.featuredItem.set(item);
+        this.featuredLoading.set(false);
+      },
+      error: () => {
+        this.featuredItem.set(null);
+        this.featuredLoading.set(false);
+      }
+    });
   }
 
   loadCategories(): void {
@@ -60,6 +77,11 @@ export class HomeComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  /** Format ceny z spacją jako separatorem tysięcy (np. 4 299). */
+  formatPrice(price: number): string {
+    return String(price).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
   handleMouseMove(event: MouseEvent, card: HTMLElement) {
