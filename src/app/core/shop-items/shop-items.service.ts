@@ -296,12 +296,12 @@ export class ShopItemsService {
 
   uploadImage(file: File): Observable<string> {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('file', file);
 
     return this.http
-      .post<{ imageUrl: string }>(`${this.restBaseUrl}/upload`, formData)
+      .post<{ url: string; publicId: string }>(`${this.restBaseUrl}/upload/image`, formData)
       .pipe(
-        map((res) => res.imageUrl),
+        map((res) => res.url),
         catchError((error: HttpErrorResponse) => {
           console.error('Błąd uploadu obrazka:', {
             status: error.status,

@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import {
+  Category,
   CreateShopItemInput,
   ItemTypes,
   ShopItem,
@@ -17,10 +18,11 @@ import {
   templateUrl: './item-create.html',
   styleUrls: ['./item-create.scss']
 })
-export class ItemCreateComponent {
+export class ItemCreateComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   readonly itemTypes = Object.values(ItemTypes);
+  readonly categories = signal<Category[]>([]);
 
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
@@ -38,6 +40,13 @@ export class ItemCreateComponent {
     private readonly shopItemsService: ShopItemsService,
     private readonly router: Router
   ) {}
+
+  ngOnInit(): void {
+    this.shopItemsService.getCategories().subscribe({
+      next: (list) => this.categories.set(list),
+      error: () => this.categories.set([])
+    });
+  }
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
