@@ -112,6 +112,7 @@ $glass: rgba(255, 255, 255, 0.05);
     gap: 15px;
     margin-top: 30px;
 
+    a,
     button {
       padding: 14px 30px;
       border-radius: 10px;
@@ -121,6 +122,8 @@ $glass: rgba(255, 255, 255, 0.05);
       transition: 0.3s;
       border: none;
       font-size: 1rem;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn-primary {
@@ -131,6 +134,10 @@ $glass: rgba(255, 255, 255, 0.05);
         transform: translateY(-3px);
         box-shadow: 0 15px 25px rgba($primary, 0.5);
       }
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 3px;
+      }
     }
 
     .btn-secondary {
@@ -140,6 +147,10 @@ $glass: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
       &:hover {
         background: rgba(255, 255, 255, 0.2);
+      }
+      &:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 3px;
       }
     }
   }
@@ -169,6 +180,26 @@ $glass: rgba(255, 255, 255, 0.05);
         box-shadow: 0 0 15px rgba($primary, 0.4);
         border-color: $primary;
       }
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 3px;
+      }
+    }
+  }
+
+  .retry-button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: rgba(0, 212, 255, 0.2);
+    border: 1px solid $primary;
+    color: $primary;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 3px;
     }
   }
 
@@ -241,8 +272,14 @@ $glass: rgba(255, 255, 255, 0.05);
         transition: opacity 0.3s;
       }
 
-      &:hover .spotlight {
+      &:hover .spotlight,
+      &:focus-visible .spotlight {
         opacity: 1;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 3px;
       }
 
       h3 { 
@@ -301,6 +338,12 @@ $glass: rgba(255, 255, 255, 0.05);
           color: white;
           text-shadow: 0 0 20px rgba($primary, 0.8);
         }
+
+        .btn-glass {
+          background: white;
+          color: #121212;
+          border-color: rgba(255, 255, 255, 0.9);
+        }
       }
     }
 
@@ -309,6 +352,11 @@ $glass: rgba(255, 255, 255, 0.05);
       text-decoration: none;
       color: inherit;
       height: 100%;
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 3px;
+        border-radius: 40px;
+      }
     }
 
     .banner-glass {
