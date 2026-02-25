@@ -5,11 +5,9 @@ import {
   Category,
   CreateShopItemInput,
   GetShopItemsFilterInput,
-  ItemTypes,
   ShopItem
 } from './generated/graphql';
 
-export { ItemTypes };
 export type { Category, CreateShopItemInput, ShopItem };
 
 interface CacheEntry<T> {
@@ -116,7 +114,6 @@ export class ShopItemsService {
         shopItem(id: $id) {
           id
           name
-          type
           price
           description
           isAvailable
@@ -321,7 +318,6 @@ export class ShopItemsService {
         createShopItem(createShopItemInput: $input) {
           id
           name
-          type
           price
           description
           isAvailable
@@ -333,7 +329,6 @@ export class ShopItemsService {
     // Usuń undefined wartości z input, aby uniknąć problemów z serializacją
     const cleanedInput: Record<string, any> = {};
     if (input['name'] !== undefined) cleanedInput['name'] = input['name'];
-    if (input['type'] !== undefined) cleanedInput['type'] = input['type'];
     if (input['price'] !== undefined) cleanedInput['price'] = input['price'];
     if (input['description'] !== undefined) cleanedInput['description'] = input['description'];
     if (input['imageUrl'] !== undefined) cleanedInput['imageUrl'] = input['imageUrl'];

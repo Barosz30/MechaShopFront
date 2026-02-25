@@ -49,8 +49,6 @@ export type CreateShopItemInput = {
   name: Scalars['String']['input'];
   /** Price */
   price: Scalars['Int']['input'];
-  /** Type */
-  type: ItemTypes;
 };
 
 export type GetShopItemsFilterInput = {
@@ -68,12 +66,6 @@ export type GetShopItemsFilterInput = {
   search?: InputMaybe<Scalars['String']['input']>;
 };
 
-export const ItemTypes = {
-  Bike: 'BIKE',
-  Part: 'PART'
-} as const;
-
-export type ItemTypes = typeof ItemTypes[keyof typeof ItemTypes];
 export type Mutation = {
   createCategory: Category;
   createShopItem: ShopItem;
@@ -148,8 +140,6 @@ export type ShopItem = {
   name: Scalars['String']['output'];
   /** Price */
   price: Scalars['Int']['output'];
-  /** Type */
-  type: ItemTypes;
 };
 
 export type ShopItemDetails = {
@@ -187,6 +177,4 @@ export type UpdateShopItemInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** Price */
   price?: InputMaybe<Scalars['Int']['input']>;
-  /** Type */
-  type?: InputMaybe<ItemTypes>;
 };

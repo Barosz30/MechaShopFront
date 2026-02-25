@@ -6,7 +6,6 @@ import { lastValueFrom } from 'rxjs';
 import {
   Category,
   CreateShopItemInput,
-  ItemTypes,
   ShopItem,
   ShopItemsService
 } from '../../core/shop-items/shop-items.service';
@@ -21,12 +20,10 @@ import {
 export class ItemCreateComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
-  readonly itemTypes = Object.values(ItemTypes);
   readonly categories = signal<Category[]>([]);
 
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
-    type: [ItemTypes.Bike, [Validators.required]],
     price: [0, [Validators.required, Validators.min(0)]],
     description: [''],
     categoryId: [null as number | null]
@@ -77,7 +74,6 @@ export class ItemCreateComponent implements OnInit {
       const raw = this.form.getRawValue();
       const input: CreateShopItemInput = {
         name: raw.name,
-        type: raw.type,
         price: raw.price,
         description: raw.description || undefined,
         imageUrl,

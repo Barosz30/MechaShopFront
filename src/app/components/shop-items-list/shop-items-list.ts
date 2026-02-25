@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
 import { ShopItem, ShopItemsService } from '../../core/shop-items/shop-items.service';
 
 @Component({
@@ -33,39 +33,60 @@ export class ShopItemsListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Odczytywanie numeru strony i categoryId z query params
+    // Przy bezpośrednim wejściu na /items?page=2 snapshot ma od razu poprawne query params.
+    // Bez tego pierwsza emisja subscribe może być pusta i ładowałaby stronę 1 zamiast 2.
+    const initialParams = this.route.snapshot.queryParams;
+    const initialPage = initialParams['page'] ? Number(initialParams['page']) : 1;
+    this.currentPage.set(initialPage);
+    if (!initialParams['page']) {
+      const queryParams: Record<string, string | number> = { page: 1 };
+      for (const key of Object.keys(initialParams)) {
+        if (key !== 'page') queryParams[key] = initialParams[key];
+      }
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams,
+        queryParamsHandling: 'merge',
+        replaceUrl: true
+      });
+    }
+    this.loadItems(initialParams);
+
+    // Reakcja na zmiany query params (np. klik "Następna", zmiana kategorii)
     this.route.queryParams.subscribe(params => {
       const page = params['page'] ? Number(params['page']) : 1;
       if (page !== this.currentPage()) {
         this.currentPage.set(page);
       }
-      
-      // Jeśli nie ma query params, zaktualizuj URL aby pokazać że jesteśmy na stronie 1
       if (!params['page']) {
-        const queryParams: any = { page: 1 };
-        if (params['categoryId']) {
-          queryParams.categoryId = params['categoryId'];
+        const queryParams: Record<string, string | number> = { page: 1 };
+        for (const key of Object.keys(params)) {
+          if (key !== 'page') queryParams[key] = params[key];
         }
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams,
           queryParamsHandling: 'merge',
-          replaceUrl: true // Użyj replaceUrl żeby nie dodawać wpisu do historii
+          replaceUrl: true
         });
       }
-      
-      this.loadItems();
+      // Unikaj podwójnego ładowania przy starcie (pierwsza emisja = te same parametry co snapshot)
+      const sameAsInitial =
+        String(params['page'] ?? '') === String(initialParams['page'] ?? '') &&
+        String(params['categoryId'] ?? '') === String(initialParams['categoryId'] ?? '');
+      if (!sameAsInitial) {
+        this.loadItems(params);
+      }
     });
   }
 
-  loadItems(): void {
+  loadItems(queryParams?: Params): void {
     this.loading.set(true);
-    const offset = (this.currentPage() - 1) * this.itemsPerPage;
+    const params = queryParams ?? this.route.snapshot.queryParams;
+    const page = params['page'] ? Number(params['page']) : 1;
+    const offset = (page - 1) * this.itemsPerPage;
     
-    // Pobierz categoryId z query params
-    const categoryId = this.route.snapshot.queryParams['categoryId'] 
-      ? Number(this.route.snapshot.queryParams['categoryId']) 
-      : undefined;
+    const categoryId = params['categoryId'] ? Number(params['categoryId']) : undefined;
     
     const filter: any = { limit: this.itemsPerPage, offset };
     if (categoryId) {
