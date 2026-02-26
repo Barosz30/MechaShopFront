@@ -55,6 +55,10 @@ export class ShopItemsListComponent implements OnInit {
   /** Czy otwarta lista ma się otwierać w górę, żeby nie wychodzić poza modal */
   dropdownOpensUpward = signal(false);
 
+  /** Debounce: zapis parametrów filtrów do URL przy wpisywaniu */
+  private urlSyncTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly URL_SYNC_DEBOUNCE_MS = 400;
+
   @ViewChild('filterModal') filterModalRef: ElementRef<HTMLElement> | undefined;
   @ViewChildren('dropdownWrap') dropdownWraps: QueryList<ElementRef<HTMLElement>> | undefined;
 
@@ -115,16 +119,19 @@ export class ShopItemsListComponent implements OnInit {
   selectCategory(value: number | ''): void {
     this.filterCategoryId.set(value);
     this.openDropdown.set(null);
+    this.scheduleFiltersToUrl();
   }
 
   selectSortBy(value: ShopItemSortBy): void {
     this.filterSortBy.set(value);
     this.openDropdown.set(null);
+    this.scheduleFiltersToUrl();
   }
 
   selectSortOrder(value: SortOrder): void {
     this.filterSortOrder.set(value);
     this.openDropdown.set(null);
+    this.scheduleFiltersToUrl();
   }
 
   getCategoryLabel(): string {
@@ -201,10 +208,7 @@ export class ShopItemsListComponent implements OnInit {
           replaceUrl: true
         });
       }
-      const sameAsInitial =
-        String(params['page'] ?? '') === String(initialParams['page'] ?? '') &&
-        String(params['categoryId'] ?? '') === String(initialParams['categoryId'] ?? '') &&
-        String(params['search'] ?? '') === String(initialParams['search'] ?? '');
+      const sameAsInitial = this.paramsEqual(initialParams, params);
       if (!sameAsInitial) {
         this.loadItems(params);
       }
@@ -252,6 +256,55 @@ export class ShopItemsListComponent implements OnInit {
     return q;
   }
 
+  /** Planuje zapis filtrów do URL (debounce) – wywołaj przy każdej zmianie pola filtra. */
+  scheduleFiltersToUrl(): void {
+    if (this.urlSyncTimeout != null) clearTimeout(this.urlSyncTimeout);
+    this.urlSyncTimeout = setTimeout(() => {
+      this.urlSyncTimeout = null;
+      this.applyFiltersToUrl();
+    }, this.URL_SYNC_DEBOUNCE_MS);
+  }
+
+  /** Zapisuje aktualne filtry do URL i resetuje stronę na 1 (bez ponownego ładowania – zrobi to subskrypcja queryParams). */
+  private applyFiltersToUrl(): void {
+    const page = 1;
+    const q = this.buildQueryParamsFromFilters(page);
+    const current = this.route.snapshot.queryParams;
+    if (this.queryParamsEqual(q, current)) return;
+    this.currentPage.set(page);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: q,
+      queryParamsHandling: '',
+      replaceUrl: true
+    });
+  }
+
+  private queryParamsEqual(
+    next: Record<string, string | number | undefined>,
+    current: Params
+  ): boolean {
+    const keys = new Set([...Object.keys(next), ...Object.keys(current)]);
+    for (const k of keys) {
+      const n = next[k];
+      const c = current[k];
+      const nStr = n === undefined || n === '' ? undefined : String(n);
+      const cStr = c === undefined || c === '' ? undefined : String(c);
+      if (nStr !== cStr) return false;
+    }
+    return true;
+  }
+
+  private paramsEqual(a: Params, b: Params): boolean {
+    const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+    for (const k of keys) {
+      const aStr = a[k] === undefined || a[k] === '' ? undefined : String(a[k]);
+      const bStr = b[k] === undefined || b[k] === '' ? undefined : String(b[k]);
+      if (aStr !== bStr) return false;
+    }
+    return true;
+  }
+
   /** Buduje obiekt filtra dla API z query params */
   buildFilterFromParams(params: Params): GetShopItemsFilterInput {
     const page = params['page'] ? Number(params['page']) : 1;
@@ -278,16 +331,15 @@ export class ShopItemsListComponent implements OnInit {
     return filter;
   }
 
-  /** Zastosuj filtry (czyta formularz, ustawia page=1, nawiguje i ładuje z nowymi parametrami) */
+  /** Zastosuj filtry (czyta formularz, ustawia page=1, nawiguje – listę przeładuje subskrypcja queryParams) */
   applyFilters(): void {
     const queryParams = this.buildQueryParamsFromFilters(1);
     this.currentPage.set(1);
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
-      queryParamsHandling: 'merge'
+      queryParamsHandling: ''
     });
-    this.loadItems(queryParams as Params);
   }
 
   /** Wyczyść filtry i załaduj od nowa */
