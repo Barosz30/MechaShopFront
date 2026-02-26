@@ -1,8 +1,181 @@
 <div class="shop-items-list-container">
-  <button (click)="goBack()" class="back-btn">
-    <span class="back-icon">←</span>
-    <span>Wróć</span>
-  </button>
+  <!-- Górny pasek: Wróć (lewo) + Filtruj (prawo) -->
+  <div class="top-bar">
+    <button (click)="goBack()" class="back-btn">
+      <span class="back-icon">←</span>
+      <span>Wróć</span>
+    </button>
+    <div class="filter-trigger-wrapper">
+      <button
+        type="button"
+        class="filter-btn"
+        (click)="toggleFilterModal()"
+        [attr.aria-expanded]="filterModalOpen()"
+        aria-haspopup="dialog">
+        Filtruj
+      </button>
+      <!-- Modal z filtrami pod przyciskiem -->
+      @if (filterModalOpen()) {
+        <div class="filter-modal-backdrop" (click)="closeFilterModal()" role="presentation"></div>
+        <div #filterModal class="filter-modal" role="dialog" aria-label="Filtry listy">
+          <div class="filters-form" [class.filters-form--dropdown-open]="openDropdown()">
+            <div class="filters-row">
+              <label class="filter-label filter-label--full">
+                Szukaj
+                <input
+                  type="text"
+                  class="filter-input"
+                  placeholder="Nazwa lub opis..."
+                  [ngModel]="filterSearch()"
+                  (ngModelChange)="filterSearch.set($event)"
+                  (keyup.enter)="acceptFiltersAndClose()">
+              </label>
+              <div
+                #dropdownWrap
+                class="filter-label custom-single-dropdown-wrap"
+                [class.dropdown-opens-up]="openDropdown() === 'category' && dropdownOpensUpward()">
+                <span class="custom-dropdown-label">Kategoria</span>
+                <div
+                  class="custom-dropdown-trigger"
+                  [class.is-open]="openDropdown() === 'category'"
+                  (click)="openDropdownPanel('category')"
+                  role="button"
+                  tabindex="0"
+                  (keydown.enter)="openDropdownPanel('category')"
+                  (keydown.space)="$event.preventDefault(); openDropdownPanel('category')">
+                  <span class="custom-dropdown-value">{{ getCategoryLabel() }}</span>
+                  <span class="custom-dropdown-chevron" aria-hidden="true">▼</span>
+                </div>
+                @if (openDropdown() === 'category') {
+                  <div class="custom-dropdown-panel" role="listbox">
+                    <button
+                      type="button"
+                      class="custom-dropdown-option"
+                      [class.is-selected]="filterCategoryId() === ''"
+                      (click)="selectCategory('')"
+                      role="option">
+                      Wszystkie
+                    </button>
+                    @for (cat of categories(); track cat.id) {
+                      <button
+                        type="button"
+                        class="custom-dropdown-option"
+                        [class.is-selected]="filterCategoryId() === cat.id"
+                        (click)="selectCategory(cat.id)"
+                        role="option">
+                        {{ cat.name }}
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+
+            </div>
+            <div class="filters-row">
+              <label class="filter-label filter-label--checkbox">
+              <input
+                type="checkbox"
+                [ngModel]="filterAvailableOnly()"
+                (ngModelChange)="filterAvailableOnly.set($event)">
+              Tylko dostępne
+            </label></div>
+            <div class="filters-row filters-row--pair">
+              <label class="filter-label">
+                Cena min (zł)
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  class="filter-input filter-input--number"
+                  [ngModel]="filterMinPrice()"
+                  (ngModelChange)="filterMinPrice.set(parsePriceInput($event))"
+                  (keyup.enter)="acceptFiltersAndClose()">
+              </label>
+              <label class="filter-label">
+                Cena max (zł)
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  class="filter-input filter-input--number"
+                  [ngModel]="filterMaxPrice()"
+                  (ngModelChange)="filterMaxPrice.set(parsePriceInput($event))"
+                  (keyup.enter)="acceptFiltersAndClose()">
+              </label>
+            </div>
+            <div class="filters-row filters-row--sort">
+              <div
+                #dropdownWrap
+                class="filter-label custom-dropdown-wrap"
+                [class.dropdown-opens-up]="openDropdown() === 'sortBy' && dropdownOpensUpward()">
+                <span class="custom-dropdown-label">Sortuj według</span>
+                <div
+                  class="custom-dropdown-trigger"
+                  [class.is-open]="openDropdown() === 'sortBy'"
+                  (click)="openDropdownPanel('sortBy')"
+                  role="button"
+                  tabindex="0"
+                  (keydown.enter)="openDropdownPanel('sortBy')"
+                  (keydown.space)="$event.preventDefault(); openDropdownPanel('sortBy')">
+                  <span class="custom-dropdown-value">{{ getSortByLabel() }}</span>
+                  <span class="custom-dropdown-chevron" aria-hidden="true">▼</span>
+                </div>
+                @if (openDropdown() === 'sortBy') {
+                  <div class="custom-dropdown-panel" role="listbox">
+                    @for (opt of sortByOptions; track opt.value) {
+                      <button
+                        type="button"
+                        class="custom-dropdown-option"
+                        [class.is-selected]="filterSortBy() === opt.value"
+                        (click)="selectSortBy(opt.value)"
+                        role="option">
+                        {{ opt.label }}
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+              <div
+                #dropdownWrap
+                class="filter-label custom-dropdown-wrap"
+                [class.dropdown-opens-up]="openDropdown() === 'sortOrder' && dropdownOpensUpward()">
+                <span class="custom-dropdown-label">Kierunek</span>
+                <div
+                  class="custom-dropdown-trigger"
+                  [class.is-open]="openDropdown() === 'sortOrder'"
+                  (click)="openDropdownPanel('sortOrder')"
+                  role="button"
+                  tabindex="0"
+                  (keydown.enter)="openDropdownPanel('sortOrder')"
+                  (keydown.space)="$event.preventDefault(); openDropdownPanel('sortOrder')">
+                  <span class="custom-dropdown-value">{{ getSortOrderLabel() }}</span>
+                  <span class="custom-dropdown-chevron" aria-hidden="true">▼</span>
+                </div>
+                @if (openDropdown() === 'sortOrder') {
+                  <div class="custom-dropdown-panel" role="listbox">
+                    @for (opt of sortOrderOptions; track opt.value) {
+                      <button
+                        type="button"
+                        class="custom-dropdown-option"
+                        [class.is-selected]="filterSortOrder() === opt.value"
+                        (click)="selectSortOrder(opt.value)"
+                        role="option">
+                        {{ opt.label }}
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="filters-actions">
+              <button type="button" class="btn-apply" (click)="acceptFiltersAndClose()">Zastosuj</button>
+              <button type="button" class="btn-clear" (click)="clearFilters(); closeFilterModal()">Wyczyść</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
 
   <h2>Przedmioty w sklepie</h2>
 

@@ -5,10 +5,19 @@ import {
   Category,
   CreateShopItemInput,
   GetShopItemsFilterInput,
-  ShopItem
+  ShopItem,
+  ShopItemSortBy,
+  SortOrder
 } from './generated/graphql';
 
-export type { Category, CreateShopItemInput, ShopItem };
+export type {
+  Category,
+  CreateShopItemInput,
+  GetShopItemsFilterInput,
+  ShopItem,
+  ShopItemSortBy,
+  SortOrder
+};
 
 interface CacheEntry<T> {
   data: T;
@@ -73,6 +82,16 @@ export class ShopItemsService {
     if (filter.minPrice !== undefined) parts.push(`minPrice:${filter.minPrice}`);
     if (filter.maxPrice !== undefined) parts.push(`maxPrice:${filter.maxPrice}`);
     if (filter.search) parts.push(`search:${filter.search}`);
+    if (filter.isAvailable !== undefined) parts.push(`avail:${filter.isAvailable}`);
+    if (filter.sortBy) parts.push(`sortBy:${filter.sortBy}`);
+    if (filter.sortOrder) parts.push(`sortOrder:${filter.sortOrder}`);
+    if (filter.manufacturer) parts.push(`man:${filter.manufacturer}`);
+    if (filter.material) parts.push(`mat:${filter.material}`);
+    if (filter.color) parts.push(`color:${filter.color}`);
+    if (filter.minWeight !== undefined) parts.push(`minW:${filter.minWeight}`);
+    if (filter.maxWeight !== undefined) parts.push(`maxW:${filter.maxWeight}`);
+    if (filter.minStock !== undefined) parts.push(`minS:${filter.minStock}`);
+    if (filter.maxStock !== undefined) parts.push(`maxS:${filter.maxStock}`);
     return parts.length > 0 ? parts.join('|') : 'all';
   }
 

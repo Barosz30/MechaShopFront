@@ -51,6 +51,12 @@ export type CreateShopItemInput = {
   price: Scalars['Int']['input'];
 };
 
+/** Kierunek sortowania (zgodne z backendem) */
+export type SortOrder = 'ASC' | 'DESC';
+
+/** Po czym sortować (zgodne z backendem) */
+export type ShopItemSortBy = 'PRICE' | 'NAME' | 'STOCK' | 'WEIGHT' | 'CREATED_AT';
+
 export type GetShopItemsFilterInput = {
   /** ID Kategorii */
   categoryId?: InputMaybe<Scalars['Int']['input']>;
@@ -62,8 +68,28 @@ export type GetShopItemsFilterInput = {
   minPrice?: InputMaybe<Scalars['Float']['input']>;
   /** Ile elementów pominąć (offset) */
   offset?: Scalars['Int']['input'];
-  /** Wyszukaj po nazwie */
+  /** Wyszukaj po nazwie lub opisie */
   search?: InputMaybe<Scalars['String']['input']>;
+  /** Tylko produkty dostępne */
+  isAvailable?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Sortowanie po polu */
+  sortBy?: InputMaybe<ShopItemSortBy>;
+  /** Kierunek sortowania */
+  sortOrder?: InputMaybe<SortOrder>;
+  /** Filtr po producencie */
+  manufacturer?: InputMaybe<Scalars['String']['input']>;
+  /** Filtr po materiale */
+  material?: InputMaybe<Scalars['String']['input']>;
+  /** Filtr po kolorze */
+  color?: InputMaybe<Scalars['String']['input']>;
+  /** Minimalna waga (kg) */
+  minWeight?: InputMaybe<Scalars['Float']['input']>;
+  /** Maksymalna waga (kg) */
+  maxWeight?: InputMaybe<Scalars['Float']['input']>;
+  /** Minimalny stan magazynowy */
+  minStock?: InputMaybe<Scalars['Int']['input']>;
+  /** Maksymalny stan magazynowy */
+  maxStock?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Mutation = {
