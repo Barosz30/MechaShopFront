@@ -44,6 +44,9 @@
       <p *ngIf="item.description" class="description">
         {{ item.description }}
       </p>
+      <button class="buy-btn" (click)="addToCart()">
+        Dodaj do koszyka
+      </button>
     </section>
 
     <section class="item-body" *ngIf="item.details || item.category">

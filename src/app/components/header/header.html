@@ -8,6 +8,9 @@
   </nav>
 
   <div class="nav-right">
+    <a routerLink="/cart" class="cart-link">
+      Koszyk ({{ cartService.items().length }})
+    </a>
     @if (authService.currentUser(); as user) {
       <div class="user-menu">
         <div class="avatar" [title]="user.username">

@@ -1,0 +1,41 @@
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs';
+
+export interface CreateCheckoutSessionLine {
+  itemId: number;
+  quantity: number;
+}
+
+export interface CreateCheckoutSessionBody {
+  items: CreateCheckoutSessionLine[];
+}
+
+interface CreateCheckoutSessionResponse {
+  url: string | null;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class PaymentsService {
+  private http = inject(HttpClient);
+
+  private apiUrl = 'https://mechanicalshopbackend.onrender.com';
+
+  createCheckoutSession(body: CreateCheckoutSessionBody) {
+    return this.http
+      .post<CreateCheckoutSessionResponse>(
+        `${this.apiUrl}/api/payments/create-checkout-session`,
+        body,
+      )
+      .pipe(
+        tap((res) => {
+          if (res.url) {
+            window.location.href = res.url;
+          }
+        }),
+      );
+  }
+}
+

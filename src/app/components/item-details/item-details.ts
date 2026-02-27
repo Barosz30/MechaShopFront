@@ -1,8 +1,9 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { map, switchMap } from 'rxjs';
 import { ShopItemsService, ShopItem } from '../../core/shop-items/shop-items.service';
+import { CartService } from '../../core/cart/cart.service';
 
 @Component({
   selector: 'app-item-details',
@@ -19,6 +20,8 @@ export class ItemDetailsComponent implements OnInit {
   imageLoadError = signal(false);
   /** true gdy obrazek produktu już się załadował (ukrycie skeletona) */
   imageLoaded = signal(false);
+
+  private readonly cartService = inject(CartService);
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -92,6 +95,12 @@ export class ItemDetailsComponent implements OnInit {
       // W przeciwnym razie użyj standardowego back()
       this.location.back();
     }
+  }
+
+  addToCart(): void {
+    const current = this.item();
+    if (!current) return;
+    this.cartService.addItem(current, 1);
   }
 }
 

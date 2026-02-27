@@ -1,0 +1,55 @@
+<div class="cart-container">
+  <h1>Twój koszyk</h1>
+
+  <div *ngIf="items().length === 0" class="empty">
+    Koszyk jest pusty.
+    <a routerLink="/items">Przejdź do sklepu</a>
+  </div>
+
+  <div *ngIf="items().length > 0" class="cart-content">
+    <div class="cart-items">
+      <div class="cart-item" *ngFor="let ci of items()">
+        <div class="info">
+          <div class="name">{{ ci.item.name }}</div>
+          <div class="price">
+            {{ ci.item.price | currency:'PLN':'symbol':'1.0-0' }}
+          </div>
+        </div>
+        <div class="actions">
+          <label>
+            Ilość:
+            <input
+              type="number"
+              min="1"
+              [value]="ci.quantity"
+              (change)="changeQuantity(ci.item.id, $event)"
+            />
+          </label>
+          <button type="button" (click)="removeItem(ci.item.id)">
+            Usuń
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="row">
+        <span>Suma</span>
+        <span>{{ total() | currency:'PLN':'symbol':'1.0-0' }}</span>
+      </div>
+
+      <div *ngIf="!isLoggedIn()" class="info">
+        Aby zapłacić, zaloguj się lub zarejestruj.
+      </div>
+
+      <button
+        type="button"
+        [disabled]="!isLoggedIn() || items().length === 0"
+        (click)="checkout()"
+      >
+        Zapłać Stripe
+      </button>
+    </div>
+  </div>
+</div>
+
