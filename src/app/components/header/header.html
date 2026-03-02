@@ -8,6 +8,13 @@
   </nav>
 
   <div class="nav-right">
+    <button type="button" class="theme-toggle" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.isDark() ? 'Włącz motyw jasny' : 'Włącz motyw ciemny'" [title]="themeService.isDark() ? 'Motyw jasny' : 'Motyw ciemny'">
+      @if (themeService.isDark()) {
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">☀️</span>
+      } @else {
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">🌙</span>
+      }
+    </button>
     <a routerLink="/cart" class="cart-link">
       Koszyk ({{ cartService.items().length }})
     </a>

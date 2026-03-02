@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoginModalComponent } from '../login-modal/login-modal';
 import { CartService } from '../../core/cart/cart.service';
+import { ThemeService } from '../../core/theme/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,7 @@ import { CartService } from '../../core/cart/cart.service';
 export class HeaderComponent {
   authService = inject(AuthService);
   cartService = inject(CartService);
+  themeService = inject(ThemeService);
   isModalOpen = signal(false);
 
   logout() {

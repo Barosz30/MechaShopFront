@@ -1,15 +1,13 @@
-$primary: #00d4ff;
-$dark-bg: #121212;
-$glass: rgba(255, 255, 255, 0.05);
+@use '../../../styles/variables' as *;
 
 .home-container {
-  background-color: $dark-bg;
-  color: white;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   min-height: 100vh;
   padding: 0 5%;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
-
+  transition: background-color var(--transition-base), color var(--transition-base);
 
   .hero {
     height: 85vh;
@@ -19,8 +17,9 @@ $glass: rgba(255, 255, 255, 0.05);
     padding: 0 10%;
     position: relative;
     background:
-      radial-gradient(circle at 80% 20%, rgba($primary, 0.15), transparent 40%),
-      radial-gradient(circle at 20% 80%, rgba($primary, 0.05), transparent 40%);
+      radial-gradient(circle at 80% 20%, rgba(var(--color-primary-rgb), 0.15), transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(var(--color-primary-rgb), 0.05), transparent 40%);
+    transition: background var(--transition-base);
 
     &::after {
       content: '';
@@ -29,7 +28,7 @@ $glass: rgba(255, 255, 255, 0.05);
       left: 0;
       width: 100%;
       height: 150px;
-      background: linear-gradient(to top, $dark-bg, transparent);
+      background: linear-gradient(to top, var(--color-bg-primary), transparent);
       z-index: 2;
     }
 
@@ -56,15 +55,15 @@ $glass: rgba(255, 255, 255, 0.05);
         letter-spacing: -2px;
 
         .highlight {
-          color: $primary;
-          text-shadow: 0 0 30px rgba($primary, 0.4);
+          color: var(--color-primary);
+          text-shadow: 0 0 30px var(--color-primary-glow);
           display: inline-block;
         }
       }
 
       p {
         font-size: 1.25rem;
-        color: rgba(255, 255, 255, 0.8);
+        color: var(--color-text-secondary);
         line-height: 1.6;
         margin-bottom: 40px;
         max-width: 500px;
@@ -80,7 +79,7 @@ $glass: rgba(255, 255, 255, 0.05);
 
       i {
         position: absolute;
-        color: rgba($primary, 0.15);
+        color: rgba(var(--color-primary-rgb), 0.15);
       }
 
       .gear-1 {
@@ -127,29 +126,29 @@ $glass: rgba(255, 255, 255, 0.05);
     }
 
     .btn-primary {
-      background: $primary;
-      color: #000;
-      box-shadow: 0 10px 20px rgba($primary, 0.3);
+      background: var(--color-primary);
+      color: var(--color-bg-primary);
+      box-shadow: 0 10px 20px var(--color-shadow-primary);
       &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 25px rgba($primary, 0.5);
+        box-shadow: 0 15px 25px var(--color-shadow-primary-lg);
       }
       &:focus-visible {
-        outline: 2px solid $primary;
+        outline: 2px solid var(--color-primary);
         outline-offset: 3px;
       }
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: var(--color-bg-glass);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-light);
       backdrop-filter: blur(10px);
       &:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: var(--color-bg-glass-hover);
       }
       &:focus-visible {
-        outline: 2px solid white;
+        outline: 2px solid var(--color-primary);
         outline-offset: 3px;
       }
     }
@@ -161,27 +160,27 @@ $glass: rgba(255, 255, 255, 0.05);
     align-items: center;
     margin: 60px 0 30px;
 
-    h2 { font-size: 2.5rem; font-weight: 800; margin: 0; }
+    h2 { font-size: 2.5rem; font-weight: 800; margin: 0; color: var(--color-text-primary); }
 
     .view-all-link {
-      color: $primary;
+      color: var(--color-primary);
       text-decoration: none;
       font-weight: 600;
       font-size: 0.9rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       padding: 8px 16px;
-      border: 1px solid rgba($primary, 0.3);
+      border: 1px solid var(--color-border);
       border-radius: 20px;
       transition: all 0.3s ease;
 
       &:hover {
-        background: rgba($primary, 0.1);
-        box-shadow: 0 0 15px rgba($primary, 0.4);
-        border-color: $primary;
+        background: rgba(var(--color-primary-rgb), 0.1);
+        box-shadow: 0 0 15px var(--color-primary-glow);
+        border-color: var(--color-primary);
       }
       &:focus-visible {
-        outline: 2px solid $primary;
+        outline: 2px solid var(--color-primary);
         outline-offset: 3px;
       }
     }
@@ -190,15 +189,15 @@ $glass: rgba(255, 255, 255, 0.05);
   .retry-button {
     margin-top: 10px;
     padding: 8px 16px;
-    background: rgba(0, 212, 255, 0.2);
-    border: 1px solid $primary;
-    color: $primary;
+    background: rgba(var(--color-primary-rgb), 0.2);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
     border-radius: 8px;
     cursor: pointer;
     font-family: inherit;
     font-weight: 600;
     &:focus-visible {
-      outline: 2px solid $primary;
+      outline: 2px solid var(--color-primary);
       outline-offset: 3px;
     }
   }
@@ -214,17 +213,17 @@ $glass: rgba(255, 255, 255, 0.05);
       color: inherit;
       position: relative;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid var(--color-border-light);
       border-radius: 24px;
       padding: 40px;
       min-height: 200px;
-      background: rgba(18, 18, 18, 0.6);
+      background: var(--color-bg-card);
       transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 
       .card-overlay {
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(18, 18, 18, 0.5);
+        background: rgba(0, 0, 0, 0.35);
         transition: 0.4s;
         z-index: 1;
       }
@@ -245,16 +244,16 @@ $glass: rgba(255, 255, 255, 0.05);
       }
 
       &:hover {
-        border-color: $primary;
+        border-color: var(--color-primary);
         transform: translateY(-5px) scale(1.02);
-        background: rgba(18, 18, 18, 0.8);
+        background: var(--color-bg-card-hover);
 
         .card-overlay {
-          background: rgba(18, 18, 18, 0.2);
+          background: rgba(0, 0, 0, 0.15);
         }
 
         h3 {
-          color: $primary;
+          color: var(--color-primary);
         }
       }
 
@@ -263,7 +262,7 @@ $glass: rgba(255, 255, 255, 0.05);
         top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(
           600px circle at var(--mouse-x) var(--mouse-y),
-          rgba(255, 255, 255, 0.1),
+          rgba(var(--color-primary-rgb), 0.12),
           transparent 40%
         );
         z-index: 2;
@@ -278,22 +277,22 @@ $glass: rgba(255, 255, 255, 0.05);
       }
 
       &:focus-visible {
-        outline: 2px solid $primary;
+        outline: 2px solid var(--color-primary);
         outline-offset: 3px;
       }
 
-      h3 { 
-        font-size: 1.4rem; 
-        margin-bottom: 8px; 
-        font-weight: 700; 
-        color: #fff;
+      h3 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+        font-weight: 700;
+        color: var(--color-text-primary);
         transition: color 0.3s;
       }
-      
-      p { 
-        color: #888; 
-        margin: 0; 
-        font-size: 0.9rem; 
+
+      p {
+        color: var(--color-text-muted);
+        margin: 0;
+        font-size: 0.9rem;
       }
     }
   }
@@ -305,8 +304,8 @@ $glass: rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
     position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px var(--color-shadow-lg);
+    border: 1px solid var(--color-border-light);
     overflow: hidden;
     transition: all 0.4s ease;
 
@@ -322,8 +321,8 @@ $glass: rgba(255, 255, 255, 0.05);
 
     &:hover {
       transform: translateY(-5px);
-      border-color: $primary;
-      box-shadow: 0 30px 60px rgba($primary, 0.15);
+      border-color: var(--color-primary);
+      box-shadow: 0 30px 60px var(--color-shadow-primary-lg);
 
       &::before {
         transform: scale(1.1);
@@ -331,18 +330,18 @@ $glass: rgba(255, 255, 255, 0.05);
       }
 
       .banner-glass {
-        background: rgba(20, 20, 20, 0.6);
-        border-color: rgba($primary, 0.3);
+        background: var(--color-bg-glass-hover);
+        border-color: var(--color-border-hover);
 
         h2 {
-          color: white;
-          text-shadow: 0 0 20px rgba($primary, 0.8);
+          color: var(--color-text-primary);
+          text-shadow: 0 0 20px var(--color-primary-glow);
         }
 
         .btn-glass {
-          background: white;
-          color: #121212;
-          border-color: rgba(255, 255, 255, 0.9);
+          background: var(--color-bg-primary);
+          color: var(--color-text-primary);
+          border-color: var(--color-border);
         }
       }
     }
@@ -353,7 +352,7 @@ $glass: rgba(255, 255, 255, 0.05);
       color: inherit;
       height: 100%;
       &:focus-visible {
-        outline: 2px solid $primary;
+        outline: 2px solid var(--color-primary);
         outline-offset: 3px;
         border-radius: 40px;
       }
@@ -362,15 +361,15 @@ $glass: rgba(255, 255, 255, 0.05);
     .banner-glass {
       position: relative;
       z-index: 2;
-      background: rgba(20, 20, 20, 0.4);
+      background: var(--color-bg-glass);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       padding: 60px;
       margin-left: 60px;
       border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid var(--color-border-light);
       max-width: 560px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 30px var(--color-shadow-md);
       transition: 0.3s;
 
       .featured-content {
@@ -393,8 +392,8 @@ $glass: rgba(255, 255, 255, 0.05);
       }
 
       .badge {
-        background: $primary;
-        color: black;
+        background: var(--color-primary);
+        color: var(--color-bg-primary);
         padding: 5px 15px;
         border-radius: 50px;
         font-size: 0.7rem;
@@ -410,32 +409,51 @@ $glass: rgba(255, 255, 255, 0.05);
         margin: 10px 0 20px;
         line-height: 1.1;
         transition: 0.3s;
-        .text-neon { color: $primary; text-shadow: 0 0 15px rgba($primary, 0.6); }
+        color: var(--color-text-primary);
+        .text-neon {
+          color: var(--color-primary);
+          text-shadow: 0 0 15px var(--color-primary-glow);
+        }
       }
 
-      p { color: #ccc; font-size: 1.1rem; margin-bottom: 30px; }
+      p {
+        color: var(--color-text-secondary);
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+      }
 
       .banner-footer {
         display: flex;
         align-items: center;
         gap: 25px;
-        .price { font-size: 1.5rem; font-weight: 700; color: white; }
-        .btn-glass { display: inline-block; }
+        .price {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--color-text-primary);
+        }
+        .btn-glass {
+          display: inline-block;
+        }
       }
     }
   }
 }
 
 .btn-glass {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  background: var(--color-bg-glass);
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
   padding: 12px 25px;
   border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
   transition: 0.3s;
-  &:hover { background: white; color: black; transform: scale(1.05); }
+  &:hover {
+    background: var(--color-bg-glass-hover);
+    color: var(--color-text-primary);
+    transform: scale(1.05);
+    border-color: var(--color-border-hover);
+  }
 }
 
 @keyframes fadeInUp {
@@ -451,4 +469,46 @@ $glass: rgba(255, 255, 255, 0.05);
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-20px); }
+}
+
+/* ============================================
+   LIGHT THEME - strona główna (tylko różnice względem zmiennych)
+   ============================================ */
+[data-theme='light'] .home-container {
+  background: transparent;
+
+  .hero {
+    background:
+      radial-gradient(circle at 80% 20%, rgba(var(--color-primary-rgb), 0.2), transparent 45%),
+      radial-gradient(circle at 20% 80%, rgba(254, 243, 199, 0.25), transparent 45%);
+
+    &::after {
+      background: linear-gradient(to top, #f0f4ff, transparent);
+    }
+
+    .hero-bg-image {
+      opacity: 0.2;
+      filter: brightness(1.1);
+    }
+
+    .floating-elements i {
+      color: rgba(var(--color-primary-rgb), 0.12);
+    }
+  }
+
+  .category-grid .category-card {
+    .card-overlay {
+      background: rgba(255, 255, 255, 0.35);
+    }
+    &:hover .card-overlay {
+      background: rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  .featured-banner::before {
+    filter: grayscale(40%) brightness(0.85);
+  }
+  .featured-banner:hover::before {
+    filter: grayscale(0%) brightness(1);
+  }
 }

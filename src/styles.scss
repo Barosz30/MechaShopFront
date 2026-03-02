@@ -50,6 +50,12 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+[data-theme='light'] body {
+  background: linear-gradient(160deg, #f0f4ff 0%, #e0e7ff 35%, #fef3c7 100%);
+  background-attachment: fixed;
 }
 
 /* ============================================
