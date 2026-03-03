@@ -37,5 +37,20 @@ export class PaymentsService {
         }),
       );
   }
+
+  createCheckoutSessionForOrder(orderId: number) {
+    return this.http
+      .post<CreateCheckoutSessionResponse>(
+        `${this.apiUrl}/api/payments/create-checkout-session-for-order/${orderId}`,
+        {},
+      )
+      .pipe(
+        tap((res) => {
+          if (res.url) {
+            window.location.href = res.url;
+          }
+        }),
+      );
+  }
 }
 

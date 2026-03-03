@@ -44,8 +44,13 @@
       <p *ngIf="item.description" class="description">
         {{ item.description }}
       </p>
-      <button class="buy-btn" (click)="addToCart()">
-        Dodaj do koszyka
+      <button
+        type="button"
+        class="buy-btn"
+        [class.added]="justAddedToCart()"
+        [disabled]="justAddedToCart()"
+        (click)="addToCart()">
+        {{ justAddedToCart() ? 'Dodano do koszyka' : 'Dodaj do koszyka' }}
       </button>
     </section>
 

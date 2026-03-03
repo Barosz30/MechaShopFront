@@ -323,3 +323,73 @@ a {
 .mb-3 { margin-bottom: var(--spacing-md); }
 .mb-4 { margin-bottom: var(--spacing-lg); }
 .mb-5 { margin-bottom: var(--spacing-xl); }
+
+/* ============================================
+   FILTER MODAL – LIGHT THEME (global, bez encapsulacji)
+   Jasne tło i ciemny tekst dla dobrego kontrastu.
+   ============================================ */
+[data-theme='light'] .filter-modal {
+  background: #ffffff !important;
+  border-color: rgba(79, 70, 229, 0.4) !important;
+  color: #0f172a !important;
+}
+
+[data-theme='light'] .filter-modal .filter-label,
+[data-theme='light'] .filter-modal .custom-dropdown-label {
+  color: #334155 !important;
+}
+
+[data-theme='light'] .filter-modal .filter-input,
+[data-theme='light'] .filter-modal .filter-select,
+[data-theme='light'] .filter-modal .custom-dropdown-trigger {
+  background: #ffffff !important;
+  border-color: rgba(79, 70, 229, 0.35) !important;
+  color: #0f172a !important;
+}
+
+[data-theme='light'] .filter-modal .filter-input::placeholder {
+  color: #64748b !important;
+  opacity: 1;
+}
+
+[data-theme='light'] .filter-modal .custom-dropdown-panel {
+  background: #ffffff !important;
+  border-color: rgba(79, 70, 229, 0.35) !important;
+}
+
+[data-theme='light'] .filter-modal .custom-dropdown-option {
+  color: #0f172a !important;
+}
+
+[data-theme='light'] .filter-modal .custom-dropdown-option:hover {
+  background: rgba(79, 70, 229, 0.1) !important;
+  color: #3730a3 !important;
+}
+
+[data-theme='light'] .filter-modal .custom-dropdown-option.is-selected {
+  background: rgba(79, 70, 229, 0.15) !important;
+  color: #3730a3 !important;
+}
+
+[data-theme='light'] .filter-modal .btn-apply {
+  background: rgba(79, 70, 229, 0.12) !important;
+  border-color: #4f46e5 !important;
+  color: #3730a3 !important;
+}
+
+[data-theme='light'] .filter-modal .btn-clear {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  color: #334155 !important;
+}
+
+[data-theme='light'] .filter-modal .btn-clear:hover {
+  background: #e2e8f0 !important;
+  border-color: #4f46e5 !important;
+  color: #0f172a !important;
+}
+
+/* Checkbox label w light modal */
+[data-theme='light'] .filter-modal .filter-label--checkbox {
+  color: #334155 !important;
+}

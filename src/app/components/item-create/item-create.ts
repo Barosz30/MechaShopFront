@@ -23,9 +23,9 @@ export class ItemCreateComponent implements OnInit {
   readonly categories = signal<Category[]>([]);
 
   form = this.fb.nonNullable.group({
-    name: ['', [Validators.required]],
-    price: [0, [Validators.required, Validators.min(0)]],
-    description: [''],
+    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+    price: [0, [Validators.required, Validators.min(0.01)]],
+    description: ['', [Validators.maxLength(1000)]],
     categoryId: [null as number | null]
   });
 
@@ -41,9 +41,39 @@ export class ItemCreateComponent implements OnInit {
   ngOnInit(): void {
     this.shopItemsService.getCategories().subscribe({
       next: (list) => this.categories.set(list),
-      error: () => this.categories.set([])
+      error: () => {
+        console.error('Błąd pobierania kategorii na stronie dodawania przedmiotu');
+        this.categories.set([]);
+      }
     });
   }
+
+  get nameControl() {
+    return this.form.controls.name;
+  }
+
+  get priceControl() {
+    return this.form.controls.price;
+  }
+
+  get descriptionControl() {
+    return this.form.controls.description;
+  }
+
+  get categoryControl() {
+    return this.form.controls.categoryId;
+  }
+
+  /** Maks. dłuższy bok w px; powyżej obraz jest pomniejszany. */
+  private static readonly MAX_IMAGE_DIMENSION = 1600;
+  /**
+   * Próg, powyżej którego zaczynamy kompresję (~1 MB).
+   * Docelowo chcemy zejść poniżej 5 MB (limit po stronie frontend + UX),
+   * przy backendowym limicie 10 MB.
+   */
+  private static readonly MAX_IMAGE_SIZE_BYTES = 1 * 1024 * 1024;
+  /** Twardy limit po stronie frontu – po kompresji nie wysyłamy pliku > 5 MB. */
+  private static readonly MAX_FRONT_UPLOAD_BYTES = 5 * 1024 * 1024;
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -54,9 +84,133 @@ export class ItemCreateComponent implements OnInit {
     }
   }
 
+  /**
+   * Kompresuje obraz do podanych wymiarów i jakości. Zwraca nowy File (JPEG).
+   * Wywołuj tylko dla plików obrazów (image/*).
+   */
+  private compressImage(file: File, maxDimension: number, quality: number): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        let targetW = w;
+        let targetH = h;
+        if (w > maxDimension || h > maxDimension) {
+          if (w >= h) {
+            targetW = maxDimension;
+            targetH = Math.round((h * maxDimension) / w);
+          } else {
+            targetH = maxDimension;
+            targetW = Math.round((w * maxDimension) / h);
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = targetW;
+        canvas.height = targetH;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Brak kontekstu canvas'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, targetW, targetH);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Nie udało się skompresować obrazu'));
+              return;
+            }
+            const name = file.name.replace(/\.[a-z]+$/i, '.jpg');
+            resolve(new File([blob], name, { type: 'image/jpeg' }));
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Nie udało się wczytać obrazu'));
+      };
+      img.src = url;
+    });
+  }
+
+  /** Sprawdza wymiary obrazu bez dekodowania do canvas (tylko Image). */
+  private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Nie udało się wczytać obrazu'));
+      };
+      img.src = url;
+    });
+  }
+
+  /**
+   * Jeśli plik jest za duży (wymiary lub rozmiar), zwraca skompresowaną wersję. W przeciwnym razie oryginał.
+   * Gdy przeglądarka nie potrafi zdekodować obrazu (format/plik), zwraca oryginał – wtedy w onSubmit pokażemy czytelny komunikat.
+   */
+  private async prepareImageForUpload(file: File): Promise<File> {
+    if (!file.type.startsWith('image/')) return file;
+    const originalSize = file.size;
+    const maxBytes = ItemCreateComponent.MAX_FRONT_UPLOAD_BYTES;
+
+    try {
+      let width: number;
+      let height: number;
+      try {
+        const dims = await this.getImageDimensions(file);
+        width = dims.width;
+        height = dims.height;
+      } catch {
+        if (originalSize <= maxBytes) return file;
+        const safe = await this.compressImage(file, 1200, 0.7);
+        return safe;
+      }
+
+      const longSide = Math.max(width, height);
+      if (originalSize <= maxBytes && longSide <= ItemCreateComponent.MAX_IMAGE_DIMENSION) {
+        return file;
+      }
+
+      const targetBytes = Math.min(maxBytes, Math.max(3 * 1024 * 1024, Math.floor(maxBytes * 0.85)));
+      const targetRatio = Math.min(1, targetBytes / Math.max(originalSize, 1));
+      const scaleFactor = Math.sqrt(targetRatio);
+      const targetMaxDimension = Math.max(
+        800,
+        Math.round(ItemCreateComponent.MAX_IMAGE_DIMENSION * scaleFactor)
+      );
+      const quality = Math.max(0.5, Math.min(0.85, 0.55 + 0.3 * targetRatio));
+
+      let result = await this.compressImage(file, targetMaxDimension, quality);
+
+      if (result.size > maxBytes) {
+        const ratio2 = maxBytes / Math.max(result.size, 1);
+        const dim2 = Math.max(600, Math.round(targetMaxDimension * Math.sqrt(ratio2)));
+        const q2 = Math.max(0.45, quality * 0.75);
+        result = await this.compressImage(result, dim2, q2);
+      }
+
+      return result;
+    } catch {
+      // Przeglądarka nie zdekodowała obrazu (format, uszkodzony plik) – zwróć oryginał;
+      // w onSubmit przy size > 5 MB pokażemy komunikat z sugestią JPG/PNG.
+      return file;
+    }
+  }
+
   async onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.error.set('Formularz zawiera błędy. Popraw zaznaczone pola i spróbuj ponownie.');
       return;
     }
 
@@ -68,7 +222,37 @@ export class ItemCreateComponent implements OnInit {
 
       const file = this.selectedFile();
       if (file) {
-        imageUrl = await lastValueFrom<string>(this.shopItemsService.uploadImage(file));
+        let fileToUpload = await this.prepareImageForUpload(file);
+
+        if (fileToUpload.size > ItemCreateComponent.MAX_FRONT_UPLOAD_BYTES) {
+          this.loading.set(false);
+          this.error.set(
+            'Obrazek jest za duży (max 5 MB) albo przeglądarka nie potrafi go przetworzyć. Użyj pliku JPG lub PNG i rozmiaru do 5 MB.'
+          );
+          return;
+        }
+
+        try {
+          imageUrl = await lastValueFrom<string>(this.shopItemsService.uploadImage(fileToUpload));
+        } catch (uploadErr: any) {
+          const status = uploadErr?.status ?? uploadErr?.error?.statusCode;
+          const isTooLarge = status === 413 || status === 400;
+          if (isTooLarge) {
+            try {
+              // Serwer nadal uważa plik za zbyt duży – nie kompresujemy kolejny raz,
+              // tylko pokazujemy czytelny komunikat.
+              this.loading.set(false);
+              this.error.set(
+                'Serwer odrzucił obraz jako zbyt duży mimo kompresji. Zapisz mniejszy plik (≤ 5 MB).'
+              );
+              return;
+            } catch {
+              throw uploadErr;
+            }
+          } else {
+            throw uploadErr;
+          }
+        }
       }
 
       const raw = this.form.getRawValue();

@@ -28,4 +28,8 @@ export class OrdersService {
       `${this.apiUrl}/api/orders/${orderId}`,
     );
   }
+
+  getUserOrders() {
+    return this.http.get<OrderSummary[]>(`${this.apiUrl}/api/orders`);
+  }
 }

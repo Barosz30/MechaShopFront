@@ -20,8 +20,11 @@ export class ItemDetailsComponent implements OnInit {
   imageLoadError = signal(false);
   /** true gdy obrazek produktu już się załadował (ukrycie skeletona) */
   imageLoaded = signal(false);
+  /** true przez 1 s po dodaniu do koszyka – przycisk pokazuje "Dodano do koszyka" i jest nieaktywny */
+  justAddedToCart = signal(false);
 
   private readonly cartService = inject(CartService);
+  private addFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -98,9 +101,16 @@ export class ItemDetailsComponent implements OnInit {
   }
 
   addToCart(): void {
+    if (this.justAddedToCart()) return;
     const current = this.item();
     if (!current) return;
     this.cartService.addItem(current, 1);
+    this.justAddedToCart.set(true);
+    if (this.addFeedbackTimeout) clearTimeout(this.addFeedbackTimeout);
+    this.addFeedbackTimeout = setTimeout(() => {
+      this.justAddedToCart.set(false);
+      this.addFeedbackTimeout = null;
+    }, 1000);
   }
 }
 

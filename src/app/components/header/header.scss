@@ -161,6 +161,12 @@
   }
 }
 
+.avatar-link {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+}
+
 .avatar {
   width: 40px;
   height: 40px;
@@ -174,12 +180,12 @@
   text-transform: uppercase;
   font-size: var(--font-size-sm);
   user-select: none;
-  cursor: default;
+  cursor: pointer;
   transition: all var(--transition-base);
   border: 2px solid transparent;
   box-shadow: 0 4px 12px var(--color-shadow-primary);
 
-  &:hover {
+  .avatar-link:hover & {
     transform: scale(1.1);
     border-color: var(--color-primary-light);
     box-shadow: 0 6px 20px var(--color-primary-glow);

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CartService } from '../../core/cart/cart.service';
+import { CartItem, CartService } from '../../core/cart/cart.service';
 import { PaymentsService } from '../../core/payments/payments.service';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -25,6 +25,19 @@ export class CartComponent {
   changeQuantity(id: number, event: Event) {
     const value = Number((event.target as HTMLInputElement).value);
     this.cartService.updateQuantity(id, value);
+  }
+
+  incrementQuantity(ci: CartItem) {
+    this.cartService.updateQuantity(ci.item.id, ci.quantity + 1);
+  }
+
+  decrementQuantity(ci: CartItem) {
+    const next = ci.quantity - 1;
+    if (next <= 0) {
+      this.cartService.removeItem(ci.item.id);
+    } else {
+      this.cartService.updateQuantity(ci.item.id, next);
+    }
   }
 
   removeItem(id: number) {

@@ -119,19 +119,16 @@ export class ShopItemsListComponent implements OnInit {
   selectCategory(value: number | ''): void {
     this.filterCategoryId.set(value);
     this.openDropdown.set(null);
-    this.scheduleFiltersToUrl();
   }
 
   selectSortBy(value: ShopItemSortBy): void {
     this.filterSortBy.set(value);
     this.openDropdown.set(null);
-    this.scheduleFiltersToUrl();
   }
 
   selectSortOrder(value: SortOrder): void {
     this.filterSortOrder.set(value);
     this.openDropdown.set(null);
-    this.scheduleFiltersToUrl();
   }
 
   getCategoryLabel(): string {

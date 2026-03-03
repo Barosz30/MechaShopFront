@@ -60,8 +60,9 @@
 
 .summary h2 {
   margin: 0 0 16px;
-  font-size: 1.1rem;
-  color: #334155;
+  font-size: 1.15rem;
+  color: #0f172a;
+  font-weight: 700;
 }
 
 .items-list {
@@ -74,21 +75,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #e2e8f0;
   gap: 12px;
 
   .item-name {
     flex: 1;
-    font-weight: 500;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.95rem;
   }
   .item-qty {
-    color: #64748b;
+    color: #475569;
+    font-weight: 500;
+    font-size: 0.95rem;
   }
   .item-total {
-    font-weight: 600;
+    font-weight: 700;
     min-width: 5rem;
     text-align: right;
+    color: #1e293b;
+    font-size: 0.95rem;
   }
 }
 
@@ -96,15 +103,17 @@
   display: flex;
   justify-content: space-between;
   padding: 12px 0 8px;
-  font-weight: 600;
-  font-size: 1.05rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #0f172a;
 }
 
 .summary-status {
   margin: 0;
   padding-top: 8px;
-  color: #64748b;
+  color: #334155;
   font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .status-paid {

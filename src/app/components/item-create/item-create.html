@@ -2,37 +2,123 @@
   <h2>Dodaj nowy przedmiot</h2>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-    <div class="field">
+    <div class="field" [class.field--error]="nameControl.invalid && nameControl.touched">
       <label for="name">Nazwa</label>
-      <input id="name" type="text" formControlName="name" />
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        required
+        [attr.aria-required]="true"
+        [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : 'false'"
+        [attr.aria-describedby]="nameControl.invalid && nameControl.touched ? 'name-error' : null"
+      />
+      <div
+        id="name-error"
+        class="field-error"
+        *ngIf="nameControl.invalid && nameControl.touched"
+      >
+        <span *ngIf="nameControl.errors?.['required']">
+          Nazwa jest wymagana.
+        </span>
+        <span *ngIf="nameControl.errors?.['minlength']">
+          Nazwa musi mieć co najmniej 3 znaki.
+        </span>
+        <span *ngIf="nameControl.errors?.['maxlength']">
+          Nazwa może mieć maksymalnie 100 znaków.
+        </span>
+      </div>
     </div>
 
-    <div class="field">
+    <div class="field" [class.field--error]="priceControl.invalid && priceControl.touched">
       <label for="price">Cena (PLN)</label>
-      <input id="price" type="number" formControlName="price" />
+      <input
+        id="price"
+        type="number"
+        formControlName="price"
+        required
+        min="0.01"
+        step="0.01"
+        [attr.aria-required]="true"
+        [attr.aria-invalid]="priceControl.invalid && priceControl.touched ? 'true' : 'false'"
+        [attr.aria-describedby]="priceControl.invalid && priceControl.touched ? 'price-error' : null"
+      />
+      <div
+        id="price-error"
+        class="field-error"
+        *ngIf="priceControl.invalid && priceControl.touched"
+      >
+        <span *ngIf="priceControl.errors?.['required']">
+          Cena jest wymagana.
+        </span>
+        <span *ngIf="priceControl.errors?.['min']">
+          Cena musi być większa od zera.
+        </span>
+      </div>
     </div>
 
-    <div class="field">
+    <div class="field" [class.field--error]="descriptionControl.invalid && descriptionControl.touched">
       <label for="description">Opis</label>
-      <textarea id="description" rows="3" formControlName="description"></textarea>
+      <textarea
+        id="description"
+        rows="3"
+        formControlName="description"
+        [attr.aria-invalid]="descriptionControl.invalid && descriptionControl.touched ? 'true' : 'false'"
+        [attr.aria-describedby]="descriptionControl.invalid && descriptionControl.touched ? 'description-error' : null"
+      ></textarea>
+      <div
+        id="description-error"
+        class="field-error"
+        *ngIf="descriptionControl.invalid && descriptionControl.touched"
+      >
+        <span *ngIf="descriptionControl.errors?.['maxlength']">
+          Opis może mieć maksymalnie 1000 znaków.
+        </span>
+      </div>
     </div>
 
     <div class="field">
       <label for="categoryId">Kategoria (opcjonalna)</label>
-      <select id="categoryId" formControlName="categoryId">
+      <select
+        id="categoryId"
+        formControlName="categoryId"
+        [attr.aria-invalid]="categoryControl.invalid && categoryControl.touched ? 'true' : 'false'"
+      >
         <option [ngValue]="null">— Brak kategorii</option>
         @for (cat of categories(); track cat.id) {
           <option [ngValue]="cat.id">{{ cat.name }}</option>
         }
       </select>
+      <p class="field-hint" *ngIf="categories().length === 0">
+        Nie udało się pobrać listy kategorii. Możesz zapisać przedmiot bez przypisanej kategorii.
+      </p>
     </div>
 
     <div class="field">
       <label for="image">Obrazek produktu (opcjonalny)</label>
-      <input id="image" type="file" accept="image/*" (change)="onFileChange($event)" />
+      <div class="file-input">
+        <input
+          #imageInput
+          id="image"
+          type="file"
+          accept="image/*"
+          (change)="onFileChange($event)"
+          class="file-input__native"
+        />
+        <button
+          type="button"
+          class="file-input__button"
+          (click)="imageInput.click()"
+        >
+          Wybierz plik
+        </button>
+        <span class="file-input__file-name">
+          {{ selectedFile()?.name || 'Nie wybrano pliku' }}
+        </span>
+      </div>
     </div>
 
-    <div *ngIf="error()" class="state-message error">
+    <div *ngIf="error()" class="state-message error" role="alert">
       {{ error() }}
     </div>
 

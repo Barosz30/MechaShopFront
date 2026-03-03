@@ -1,0 +1,70 @@
+<div class="profile-container">
+  @if (!isLoggedIn()) {
+    <p class="redirect-msg">Przekierowuję...</p>
+  } @else if (user(); as u) {
+    <div class="card profile-card">
+      <h1>Moje konto</h1>
+      <div class="user-info">
+        <div class="avatar-large">{{ u.username.charAt(0).toUpperCase() }}</div>
+        <div class="user-details">
+          <p class="username">{{ u.username }}</p>
+          <p class="user-id">ID użytkownika: {{ u.sub }}</p>
+        </div>
+      </div>
+
+      <section class="section history-section" aria-label="Historia zakupów">
+        <h2>Historia zakupów</h2>
+        <button
+          type="button"
+          class="btn btn-toggle"
+          (click)="loadHistory()"
+        >
+          {{ showHistory() ? 'Ukryj historię zakupów' : 'Pokaż historię zakupów' }}
+        </button>
+
+        @if (showHistory()) {
+          @if (loading()) {
+            <p class="loading">Ładowanie historii...</p>
+          } @else if (historyError()) {
+            <p class="error">{{ historyError() }}</p>
+          } @else if (orders().length === 0) {
+            <p class="empty">Brak zamówień.</p>
+          } @else {
+            <ul class="orders-list">
+              @for (order of orders(); track order.id) {
+                <li class="order-card">
+                  <div class="order-header">
+                    <span class="order-id">Zamówienie #{{ order.id }}</span>
+                    <span class="order-date">{{ order.createdAt | date:'short' }}</span>
+                    @if (order.status === 'PENDING') {
+                      <button type="button" class="btn btn-pay" (click)="payForOrder(order.id)">Zapłać</button>
+                    }
+                    <span class="order-status" [class]="'status-' + order.status.toLowerCase()">{{ order.status }}</span>
+                  </div>
+                  <ul class="items-list">
+                    @for (line of order.items; track line.itemName + line.quantity + $index) {
+                      <li class="item-row">
+                        <span class="item-name">{{ line.itemName }}</span>
+                        <span class="item-qty">× {{ line.quantity }}</span>
+                        <span class="item-total">{{ line.lineTotal | currency:'PLN':'symbol':'1.0-0' }}</span>
+                      </li>
+                    }
+                  </ul>
+                  <div class="order-total">
+                    <span>Suma</span>
+                    <span>{{ order.totalAmount | currency:'PLN':'symbol':'1.0-0' }}</span>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        }
+      </section>
+
+      <div class="actions">
+        <a routerLink="/" class="btn btn-primary">Strona główna</a>
+        <a routerLink="/items" class="btn btn-secondary">Sklep</a>
+      </div>
+    </div>
+  }
+</div>

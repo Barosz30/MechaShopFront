@@ -27,7 +27,7 @@
                   class="filter-input"
                   placeholder="Nazwa lub opis..."
                   [ngModel]="filterSearch()"
-                  (ngModelChange)="filterSearch.set($event); scheduleFiltersToUrl()"
+                  (ngModelChange)="filterSearch.set($event)"
                   (keyup.enter)="acceptFiltersAndClose()">
               </label>
               <div
@@ -76,7 +76,7 @@
               <input
                 type="checkbox"
                 [ngModel]="filterAvailableOnly()"
-                (ngModelChange)="filterAvailableOnly.set($event); scheduleFiltersToUrl()">
+                (ngModelChange)="filterAvailableOnly.set($event)">
               Tylko dostępne
             </label></div>
             <div class="filters-row filters-row--pair">
@@ -88,7 +88,7 @@
                   step="1"
                   class="filter-input filter-input--number"
                   [ngModel]="filterMinPrice()"
-                  (ngModelChange)="filterMinPrice.set(parsePriceInput($event)); scheduleFiltersToUrl()"
+                  (ngModelChange)="filterMinPrice.set(parsePriceInput($event))"
                   (keyup.enter)="acceptFiltersAndClose()">
               </label>
               <label class="filter-label">
@@ -99,7 +99,7 @@
                   step="1"
                   class="filter-input filter-input--number"
                   [ngModel]="filterMaxPrice()"
-                  (ngModelChange)="filterMaxPrice.set(parsePriceInput($event)); scheduleFiltersToUrl()"
+                  (ngModelChange)="filterMaxPrice.set(parsePriceInput($event))"
                   (keyup.enter)="acceptFiltersAndClose()">
               </label>
             </div>

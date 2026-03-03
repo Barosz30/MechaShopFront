@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CartService } from '../../core/cart/cart.service';
 import { OrdersService, OrderSummary } from '../../core/orders/orders.service';
 
 @Component({
@@ -13,6 +14,7 @@ import { OrdersService, OrderSummary } from '../../core/orders/orders.service';
 export class PaymentSuccessComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private ordersService = inject(OrdersService);
+  private cartService = inject(CartService);
 
   orderId = signal<number | null>(null);
   order = signal<OrderSummary | null>(null);
@@ -20,6 +22,7 @@ export class PaymentSuccessComponent implements OnInit {
   error = signal<string | null>(null);
 
   ngOnInit() {
+    this.cartService.clear();
     const id = this.route.snapshot.queryParamMap.get('orderId');
     const numId = id ? parseInt(id, 10) : NaN;
     if (!isNaN(numId)) {

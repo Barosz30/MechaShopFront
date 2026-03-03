@@ -16,16 +16,33 @@
           </div>
         </div>
         <div class="actions">
-          <label>
-            Ilość:
-            <input
-              type="number"
-              min="1"
-              [value]="ci.quantity"
-              (change)="changeQuantity(ci.item.id, $event)"
-            />
-          </label>
-          <button type="button" (click)="removeItem(ci.item.id)">
+          <div class="quantity-wrapper">
+            <span class="quantity-label-text">Ilość</span>
+            <div class="quantity-controls">
+              <button
+                type="button"
+                class="qty-btn qty-btn--minus"
+                (click)="decrementQuantity(ci)"
+              >
+                −
+              </button>
+              <input
+                class="qty-input"
+                type="number"
+                min="1"
+                [value]="ci.quantity"
+                (change)="changeQuantity(ci.item.id, $event)"
+              />
+              <button
+                type="button"
+                class="qty-btn qty-btn--plus"
+                (click)="incrementQuantity(ci)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <button type="button" class="remove-btn" (click)="removeItem(ci.item.id)">
             Usuń
           </button>
         </div>
@@ -41,6 +58,10 @@
       <div *ngIf="!isLoggedIn()" class="info">
         Aby zapłacić, zaloguj się lub zarejestruj.
       </div>
+
+      <p *ngIf="isLoggedIn()" class="test-card-info">
+        Użyj karty o numerze 4242 4242 4242 4242, aby zatwierdzić udawaną transakcję.
+      </p>
 
       <button
         type="button"

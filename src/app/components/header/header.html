@@ -20,9 +20,9 @@
     </a>
     @if (authService.currentUser(); as user) {
       <div class="user-menu">
-        <div class="avatar" [title]="user.username">
-          {{ getInitials(user.username) }}
-        </div>
+        <a routerLink="/profile" class="avatar-link" [title]="'Profil: ' + user.username">
+          <span class="avatar">{{ getInitials(user.username) }}</span>
+        </a>
 
         <button class="logout-btn" (click)="logout()">
           Wyloguj

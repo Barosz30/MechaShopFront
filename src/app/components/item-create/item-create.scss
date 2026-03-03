@@ -72,6 +72,46 @@ form {
     min-height: 120px;
     font-family: inherit;
   }
+
+  .file-input {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  .file-input__native {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  .file-input__button {
+    @include button-secondary;
+    white-space: nowrap;
+  }
+
+  .file-input__file-name {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  &.field--error {
+    input,
+    textarea,
+    select {
+      border-color: rgba(239, 68, 68, 0.7);
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.18);
+    }
+  }
+
+  .field-error {
+    font-size: var(--font-size-xs);
+    color: rgba(239, 68, 68, 0.9);
+  }
 }
 
 button[type='submit'] {
