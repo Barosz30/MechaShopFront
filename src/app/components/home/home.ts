@@ -49,7 +49,6 @@ export class HomeComponent implements OnInit {
     
     this.shopItemsService.getCategories().subscribe({
       next: (categories) => {
-        // Sprawdź czy kategorie nie są puste
         if (!categories || categories.length === 0) {
           console.warn('Otrzymano pustą listę kategorii');
           this.error.set('Brak dostępnych kategorii.');
@@ -58,14 +57,13 @@ export class HomeComponent implements OnInit {
           return;
         }
         
-        // Pobierz liczbę produktów dla każdej kategorii
         const categoriesWithCounts = categories.map(cat => ({
           ...cat,
-          itemCount: 0 // Będzie zaktualizowane później jeśli potrzebne
+          itemCount: 0
         }));
         this.categories.set(categoriesWithCounts);
         this.loading.set(false);
-        this.error.set(null); // Wyczyść błąd jeśli wszystko OK
+        this.error.set(null);
       },
       error: (err: unknown) => {
         console.error('Błąd pobierania kategorii:', err);
@@ -73,22 +71,22 @@ export class HomeComponent implements OnInit {
           ? err.message 
           : 'Nie udało się pobrać kategorii.';
         this.error.set(errorMessage);
-        this.categories.set([]); // Upewnij się że tablica jest pusta przy błędzie
+        this.categories.set([]); 
         this.loading.set(false);
       }
     });
   }
 
-  /** Format ceny z spacją jako separatorem tysięcy (np. 4 299). */
   formatPrice(price: number): string {
     return String(price).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
 
-  handleMouseMove(event: MouseEvent, card: HTMLElement) {
-    const rect = card.getBoundingClientRect();
+  handleMouseMove(event: MouseEvent, card: HTMLElement | { nativeElement: HTMLElement }) {
+    const el = 'nativeElement' in card ? card.nativeElement : card;
+    const rect = el.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    card.style.setProperty('--mouse-x', `${x}px`);
-    card.style.setProperty('--mouse-y', `${y}px`);
+    el.style.setProperty('--mouse-x', `${x}px`);
+    el.style.setProperty('--mouse-y', `${y}px`);
   }
 }

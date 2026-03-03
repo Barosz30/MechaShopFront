@@ -61,7 +61,8 @@
 
   <section class="featured-banner" *ngIf="!featuredLoading() && featuredItem(); else featuredPlaceholder" aria-label="Polecany produkt">
     <a [routerLink]="['/item', featuredItem()!.id]" class="banner-link" [attr.aria-label]="'Polecany produkt: ' + featuredItem()!.name">
-      <div class="banner-glass">
+      <div class="banner-glass" #bannerGlass (mousemove)="handleMouseMove($event, bannerGlass)">
+        <div class="spotlight" aria-hidden="true"></div>
         <span class="badge">Polecane</span>
         <div class="featured-content">
           @if (featuredItem()?.imageUrl) {
