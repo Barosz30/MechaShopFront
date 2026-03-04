@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node dist/apka-testowa/server/server.mjs",
+    "start:dev": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration production --base-href /mechanical-shop/",
     "watch": "ng build --watch --configuration development",
