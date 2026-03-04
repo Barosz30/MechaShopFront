@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -18,6 +18,24 @@ export class HeaderComponent {
   cartService = inject(CartService);
   themeService = inject(ThemeService);
   isModalOpen = signal(false);
+  mobileMenuOpen = signal(false);
+
+  constructor() {
+    effect(() => {
+      const open = this.mobileMenuOpen();
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = open ? 'hidden' : '';
+      }
+    });
+  }
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen.set(!this.mobileMenuOpen());
+  }
+
+  closeMobileMenu() {
+    this.mobileMenuOpen.set(false);
+  }
 
   logout() {
     if(confirm('Czy na pewno chcesz się wylogować?')) {

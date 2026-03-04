@@ -2,9 +2,9 @@
   <div class="logo" routerLink="/">Warsztat 🚗</div>
 
   <nav class="nav-center">
-    <a routerLink="/">Start</a>
-    <a routerLink="/items">Wszystkie</a>
-    <a routerLink="/items/new" class="nav-btn-primary">Dodaj nowy</a>
+    <a routerLink="/" (click)="closeMobileMenu()">Start</a>
+    <a routerLink="/items" (click)="closeMobileMenu()">Wszystkie</a>
+    <a routerLink="/items/new" class="nav-btn-primary" (click)="closeMobileMenu()">Dodaj nowy</a>
   </nav>
 
   <div class="nav-right">
@@ -15,26 +15,64 @@
         <span class="theme-icon theme-icon-moon" aria-hidden="true">🌙</span>
       }
     </button>
-    <a routerLink="/cart" class="cart-link">
+    <a routerLink="/cart" class="cart-link" (click)="closeMobileMenu()">
       Koszyk ({{ cartService.items().length }})
     </a>
     @if (authService.currentUser(); as user) {
       <div class="user-menu">
-        <a routerLink="/profile" class="avatar-link" [title]="'Profil: ' + user.username">
+        <a routerLink="/profile" class="avatar-link" [title]="'Profil: ' + user.username" (click)="closeMobileMenu()">
           <span class="avatar">{{ getInitials(user.username) }}</span>
         </a>
 
-        <button class="logout-btn" (click)="logout()">
+        <button class="logout-btn" (click)="logout(); closeMobileMenu()">
           Wyloguj
         </button>
       </div>
     } @else {
-      <button class="login-btn" (click)="isModalOpen.set(true)">
+      <button class="login-btn" (click)="isModalOpen.set(true); closeMobileMenu()">
         Zaloguj
       </button>
     }
   </div>
+
+  <button
+    type="button"
+    class="hamburger"
+    (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="mobileMenuOpen()"
+    aria-label="Menu">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </button>
 </header>
+
+@if (mobileMenuOpen()) {
+  <div class="mobile-overlay" (click)="closeMobileMenu()" role="button" tabindex="-1" aria-label="Zamknij menu"></div>
+  <div class="mobile-menu" role="dialog" aria-label="Menu nawigacji">
+    <nav class="mobile-nav">
+      <a routerLink="/" (click)="closeMobileMenu()">Start</a>
+      <a routerLink="/items" (click)="closeMobileMenu()">Wszystkie</a>
+      <a routerLink="/items/new" class="nav-btn-primary" (click)="closeMobileMenu()">Dodaj nowy</a>
+    </nav>
+    <div class="mobile-nav-actions">
+      <button type="button" class="theme-toggle" (click)="themeService.toggleTheme()" [attr.aria-label]="themeService.isDark() ? 'Włącz motyw jasny' : 'Włącz motyw ciemny'">
+        @if (themeService.isDark()) {
+          <span class="theme-icon">☀️</span>
+        } @else {
+          <span class="theme-icon">🌙</span>
+        }
+      </button>
+      <a routerLink="/cart" (click)="closeMobileMenu()">Koszyk ({{ cartService.items().length }})</a>
+      @if (authService.currentUser(); as user) {
+        <a routerLink="/profile" (click)="closeMobileMenu()">Profil ({{ user.username }})</a>
+        <button class="logout-btn" (click)="logout(); closeMobileMenu()">Wyloguj</button>
+      } @else {
+        <button class="login-btn" (click)="isModalOpen.set(true); closeMobileMenu()">Zaloguj</button>
+      }
+    </div>
+  </div>
+}
 
 @if (isModalOpen()) {
   <app-login-modal (close)="isModalOpen.set(false)"></app-login-modal>
