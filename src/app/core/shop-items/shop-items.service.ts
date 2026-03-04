@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { catchError, map, Observable, of, retry, shareReplay, throwError, timer } from 'rxjs';
 import {
   Category,
@@ -55,9 +56,8 @@ interface GetCategoriesResponse {
 })
 export class ShopItemsService {
   private readonly http = inject(HttpClient);
-  private readonly graphqlUrl = 'https://mechanicalshopbackend.onrender.com/graphql';
-  // REST API backend (Nest) – używa tego samego base URL co GraphQL
-  private readonly restBaseUrl = 'https://mechanicalshopbackend.onrender.com';
+  private readonly graphqlUrl = `${environment.apiUrl}/graphql`;
+  private readonly restBaseUrl = environment.apiUrl;
 
   // Cache dla list przedmiotów - klucz to stringified filter
   private readonly itemsCache = new Map<string, CacheEntry<ShopItem[]>>();

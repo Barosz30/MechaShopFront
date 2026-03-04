@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../../environments/environment';
 interface AuthResponse {
   access_token: string;
 }
@@ -22,7 +23,7 @@ export class AuthService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
-  private apiUrl = "https://mechanicalshopbackend.onrender.com";
+  private apiUrl = environment.apiUrl;
   private tokenKey = 'access_token';
 
   currentUser = signal<User | null>(null);

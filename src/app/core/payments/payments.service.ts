@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface CreateCheckoutSessionLine {
   itemId: number;
@@ -21,7 +22,7 @@ interface CreateCheckoutSessionResponse {
 export class PaymentsService {
   private http = inject(HttpClient);
 
-  private apiUrl = 'https://mechanicalshopbackend.onrender.com';
+  private apiUrl = environment.apiUrl;
 
   createCheckoutSession(body: CreateCheckoutSessionBody) {
     return this.http

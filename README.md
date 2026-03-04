@@ -1,59 +1,47 @@
-# ApkaTestowa
+# Mechanical Shop – Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.5.
+Frontend sklepu rowerowego (Angular 21). Backend (NestJS) jest w **osobnym repozytorium** i hostowany na Renderze.
 
-## Development server
+## Linki (live)
 
-To start a local development server, run:
+| Co | URL |
+|----|-----|
+| **Aplikacja (ten frontend)** | `https://<twoj-login>.github.io/<nazwa-tego-repo>/` |
+| **Backend API** | https://mechanicalshopbackend.onrender.com |
+| **Swagger** | https://mechanicalshopbackend.onrender.com/api |
+| **GraphQL** | https://mechanicalshopbackend.onrender.com/graphql |
 
-```bash
-ng serve
-```
+Adres GitHub Pages zależy od nazwy tego repozytorium. Jeśli repo nazywa się np. `mechanical-shop`, to adres to:  
+`https://<twoj-login>.github.io/mechanical-shop/`  
+Upewnij się, że w `package.json` w skrypcie `build:prod` parametr `--base-href` ma tę samą ścieżkę (np. `--base-href /mechanical-shop/`).
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Konto demo (dla rekruterów)
 
-## Code scaffolding
+- **Login:** `demo`  
+- **Hasło:** `Demo123!`  
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+(Konto jest tworzone w backendzie przez `npm run seed` – backend w osobnym repo.)
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Uruchomienie lokalne
 
 ```bash
-ng build
+npm install
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Aplikacja: http://localhost:4200. W trybie dev frontend korzysta z `http://localhost:3000` (zmienna w `src/environments/environment.ts`). Backend uruchamiasz osobno z drugiego repo.
 
-## Running unit tests
+## Deploy na GitHub Pages
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+1. W ustawieniach repozytorium: **Settings → Pages** → Build and deployment: **GitHub Actions**.
+2. Przy pushu na gałąź `main` workflow zbuduje projekt i wdroży go na Pages.
+3. Alternatywnie lokalnie: `npm run deploy` (wymaga `angular-cli-ghpages` i uprawnień do repo).
 
-```bash
-ng test
-```
+## Backend (osobne repo)
 
-## Running end-to-end tests
+- API jest hostowane na Renderze.
+- Aby frontend z GitHub Pages mógł wywoływać API, w serwisie na Renderze ustaw zmienną **CORS_ORIGIN** na URL tego frontendu, np. `https://<twoj-login>.github.io` (lub pełny URL z ścieżką; wiele adresów oddziel przecinkami).
 
-For end-to-end (e2e) testing, run:
+## Tech stack (frontend)
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Angular 21, SCSS, GraphQL (HTTP), JWT, RxJS.

@@ -5,13 +5,15 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production --base-href /mechanical-shop/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
     "e2e:ui": "playwright test --ui",
     "serve:ssr:Mechanical-Shop": "node dist/Mechanical-Shop/server/server.mjs",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "deploy": "npm run build:prod && npx angular-cli-ghpages --dir=dist/apka-testowa/browser"
   },
   "prettier": {
     "printWidth": 100,
@@ -53,6 +55,7 @@
     "@types/node": "^20.17.19",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "angular-cli-ghpages": "^2.0.0"
   }
 }

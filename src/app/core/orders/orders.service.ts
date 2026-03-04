@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 export interface OrderSummaryItem {
   itemName: string;
@@ -21,7 +22,7 @@ export interface OrderSummary {
 })
 export class OrdersService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://mechanicalshopbackend.onrender.com';
+  private apiUrl = environment.apiUrl;
 
   getOrderSummary(orderId: number) {
     return this.http.get<OrderSummary>(
