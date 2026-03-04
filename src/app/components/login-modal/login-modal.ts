@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, inject, NgZone, Output, signal, Vi
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../core/auth/auth.service';
+import { environment } from '../../../environments/environment';
 
 declare const google: any;
 
@@ -112,7 +113,7 @@ export class LoginModalComponent {
     if (typeof google === 'undefined' || !this.googleBtn) return;
 
     google.accounts.id.initialize({
-      client_id: '8856742243-08kf1ehvnbp9hdqvrnkl6cma56888i94.apps.googleusercontent.com',
+      client_id: environment.googleClientId,
       callback: (res: any) => this.handleGoogle(res)
     });
 
