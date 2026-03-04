@@ -18,7 +18,7 @@ app.use((req, res, next) => {
     'Content-Security-Policy',
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com; " +
-    "style-src 'self' 'unsafe-inline'; " +
+    "style-src 'self' 'unsafe-inline' https://accounts.google.com; " +
     "img-src 'self' data: https://lh3.googleusercontent.com https://imagedelivery.net https://res.cloudinary.com https://*.cloudinary.com https://images.unsplash.com; " +
     "connect-src 'self' http://localhost:3000 http://localhost:4200 ws://localhost:4200 http://127.0.0.1:7389 https://accounts.google.com https://oauth2.googleapis.com https://mechanicalshopbackend.onrender.com; " +
     "frame-src 'self' https://accounts.google.com;"
