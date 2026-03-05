@@ -19,6 +19,36 @@ const ROUTES: { path: string; slug: string }[] = [
   { path: '/profile', slug: 'profile' },
 ];
 
+/** Przykładowe pozycje do koszyka (zgodne z CartService + ShopItem), żeby screenshot koszyka miał zawartość */
+const SAMPLE_CART = [
+  {
+    item: {
+      id: 1,
+      name: 'Śruba M8x40',
+      price: 4,
+      isAvailable: true,
+      description: 'Stalowa śruba hex',
+      imageUrl: null,
+      category: null,
+      details: null,
+    },
+    quantity: 3,
+  },
+  {
+    item: {
+      id: 2,
+      name: 'Nakrętka M8',
+      price: 2,
+      isAvailable: true,
+      description: null,
+      imageUrl: null,
+      category: null,
+      details: null,
+    },
+    quantity: 10,
+  },
+];
+
 for (const [viewportName, viewportSize] of Object.entries(VIEWPORTS)) {
   for (const theme of THEMES) {
     for (const { path, slug } of ROUTES) {
@@ -31,8 +61,30 @@ for (const [viewportName, viewportSize] of Object.entries(VIEWPORTS)) {
           },
           theme,
         );
-        await page.goto(path, { waitUntil: 'networkidle' });
+
+        if (slug === 'cart') {
+          // Najpierw ładujemy dowolną stronę, ustawiamy koszyk w localStorage, potem idziemy na /cart
+          await page.goto('/', { waitUntil: 'networkidle' });
+          await page.evaluate((cartJson: string) => {
+            localStorage.setItem('cart', cartJson);
+          }, JSON.stringify(SAMPLE_CART));
+          await page.goto('/cart', { waitUntil: 'networkidle' });
+        } else {
+          await page.goto(path, { waitUntil: 'networkidle' });
+        }
+
         await page.locator('app-header').first().waitFor({ state: 'visible', timeout: 10_000 });
+
+        // Strona pojedynczego przedmiotu ładuje dane z API – czekamy na zakończenie (sukces lub błąd)
+        if (path === '/item/1') {
+          await page
+            .locator(
+              '.item-details-container .back-btn, .item-details-container .state-message.error',
+            )
+            .first()
+            .waitFor({ state: 'visible', timeout: 20_000 });
+        }
+
         const dir = `e2e-screenshots/${viewportName}-${viewportSize.width}x${viewportSize.height}/${theme}`;
         await page.screenshot({
           path: `${dir}/${slug}.png`,
@@ -41,4 +93,34 @@ for (const [viewportName, viewportSize] of Object.entries(VIEWPORTS)) {
       });
     }
   }
+}
+
+// Podgląd otwartego burger menu – tylko na mobile (z przykładowym koszykiem w nagłówku)
+const MOBILE_VIEWPORT = VIEWPORTS.mobile;
+for (const theme of THEMES) {
+  test(`screenshot mobile ${theme} burger-menu (open)`, async ({ page }) => {
+    await page.setViewportSize(MOBILE_VIEWPORT);
+    await page.addInitScript(
+      (themeValue: string) => {
+        localStorage.setItem('app-theme', themeValue);
+        document.documentElement.setAttribute('data-theme', themeValue);
+      },
+      theme,
+    );
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.evaluate((cartJson: string) => {
+      localStorage.setItem('cart', cartJson);
+    }, JSON.stringify(SAMPLE_CART));
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.locator('app-header').first().waitFor({ state: 'visible', timeout: 10_000 });
+
+    await page.getByRole('button', { name: 'Menu' }).click();
+    await page.locator('.mobile-menu').waitFor({ state: 'visible', timeout: 5_000 });
+
+    const dir = `e2e-screenshots/mobile-${MOBILE_VIEWPORT.width}x${MOBILE_VIEWPORT.height}/${theme}`;
+    await page.screenshot({
+      path: `${dir}/burger-menu.png`,
+      fullPage: true,
+    });
+  });
 }

@@ -64,10 +64,11 @@
 
       p {
         font-size: 1.25rem;
-        color: var(--color-text-secondary);
+        color: var(--color-text-primary);
         line-height: 1.6;
         margin-bottom: 40px;
         max-width: 500px;
+        opacity: 0.95;
       }
     }
 
@@ -142,12 +143,13 @@
     }
 
     .btn-secondary {
-      background: var(--color-bg-glass);
+      background: rgba(var(--color-primary-rgb), 0.32);
       color: var(--color-text-primary);
-      border: 1px solid var(--color-border-light);
+      border: 2px solid var(--color-primary-light);
       backdrop-filter: blur(10px);
       &:hover {
-        background: var(--color-bg-glass-hover);
+        background: rgba(var(--color-primary-rgb), 0.45);
+        border-color: var(--color-primary);
       }
       &:focus-visible {
         outline: 2px solid var(--color-primary);
@@ -165,21 +167,22 @@
     h2 { font-size: 2.5rem; font-weight: 800; margin: 0; color: var(--color-text-primary); }
 
     .view-all-link {
-      color: var(--color-primary);
+      color: var(--color-primary-light);
       text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-weight: 700;
+      font-size: 1rem;
       text-transform: uppercase;
       letter-spacing: 1px;
-      padding: 8px 16px;
-      border: 1px solid var(--color-border);
+      padding: 10px 20px;
+      border: 2px solid var(--color-primary);
       border-radius: 20px;
+      background: rgba(var(--color-primary-rgb), 0.2);
       transition: all 0.3s ease;
 
       &:hover {
-        background: rgba(var(--color-primary-rgb), 0.1);
+        background: rgba(var(--color-primary-rgb), 0.22);
         box-shadow: 0 0 15px var(--color-primary-glow);
-        border-color: var(--color-primary);
+        border-color: var(--color-primary-light);
       }
       &:focus-visible {
         outline: 2px solid var(--color-primary);
@@ -292,10 +295,11 @@
       }
 
       p {
-        color: var(--color-text-secondary);
+        color: var(--color-text-primary);
         margin: 0;
         font-size: 0.95rem;
         line-height: 1.5;
+        opacity: 0.92;
       }
     }
   }
@@ -466,9 +470,10 @@
       }
 
       p {
-        color: var(--color-text-secondary);
+        color: var(--color-text-primary);
         font-size: 1.1rem;
         margin-bottom: 30px;
+        opacity: 0.92;
       }
 
       .banner-footer {
@@ -595,19 +600,19 @@
 }
 
 .btn-glass {
-  background: var(--color-bg-glass);
-  border: 1px solid var(--color-border-light);
+  background: rgba(var(--color-primary-rgb), 0.32);
+  border: 2px solid var(--color-primary);
   color: var(--color-text-primary);
   padding: 12px 25px;
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   transition: 0.3s;
   &:hover {
-    background: var(--color-bg-glass-hover);
+    background: rgba(var(--color-primary-rgb), 0.45);
     color: var(--color-text-primary);
     transform: scale(1.05);
-    border-color: var(--color-border-hover);
+    border-color: var(--color-primary-light);
   }
 }
 

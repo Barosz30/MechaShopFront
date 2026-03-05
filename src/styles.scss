@@ -184,10 +184,10 @@ body {
   }
 }
 
-/* Price display */
+/* Price display – wysoki kontrast na ciemnym tle */
 .price {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+  color: #86efac; /* jasny zielony, czytelny na ciemnym tle */
   
   &-large {
     font-size: var(--font-size-xl);
@@ -196,6 +196,10 @@ body {
   &-medium {
     font-size: var(--font-size-lg);
   }
+}
+
+[data-theme='light'] .price {
+  color: var(--color-success);
 }
 
 /* Links */
