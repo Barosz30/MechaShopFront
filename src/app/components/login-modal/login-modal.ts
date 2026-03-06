@@ -41,16 +41,38 @@ declare const google: any;
   `,
   styles: [`
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.2); text-align: center; font-family: sans-serif; }
+    .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.2); text-align: center; font-family: sans-serif; color: #1a1a1a; }
+    .modal-content h2 { color: #1a1a1a; margin-top: 0; }
     .close-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; }
     input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
     button[type="submit"] { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
     button:disabled { background: #ccc; }
-    .divider { margin: 20px 0; color: #888; font-size: 0.9rem; }
-    .switch-mode { margin-top: 15px; font-size: 0.9rem; }
+    .divider { margin: 20px 0; color: #666; font-size: 0.9rem; }
+    .switch-mode { margin-top: 15px; font-size: 0.9rem; color: #333; }
     .switch-mode span { color: #007bff; cursor: pointer; font-weight: bold; text-decoration: underline; }
     .error { color: red; font-size: 0.85rem; margin-bottom: 10px; }
     .google-btn-wrapper { display: flex; justify-content: center; min-height: 44px; }
+
+    :host-context([data-theme='dark']) .modal-content {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-light);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    :host-context([data-theme='dark']) .modal-content h2 { color: var(--color-text-primary); }
+    :host-context([data-theme='dark']) .close-btn { color: var(--color-text-secondary); }
+    :host-context([data-theme='dark']) .close-btn:hover { color: var(--color-text-primary); }
+    :host-context([data-theme='dark']) .divider { color: var(--color-text-muted); }
+    :host-context([data-theme='dark']) .switch-mode { color: var(--color-text-secondary); }
+    :host-context([data-theme='dark']) .switch-mode span { color: var(--color-primary); }
+    :host-context([data-theme='dark']) input {
+      background: var(--color-bg-tertiary);
+      border-color: var(--color-border);
+      color: var(--color-text-primary);
+    }
+    :host-context([data-theme='dark']) input::placeholder { color: var(--color-text-muted); }
+    :host-context([data-theme='dark']) button[type="submit"] { background: var(--color-primary); }
+    :host-context([data-theme='dark']) button:disabled { background: var(--color-text-muted); color: var(--color-bg-primary); }
   `]
 })
 export class LoginModalComponent {

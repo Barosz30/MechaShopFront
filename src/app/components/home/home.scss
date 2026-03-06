@@ -634,7 +634,7 @@
 /* ============================================
    LIGHT THEME - strona główna (tylko różnice względem zmiennych)
    ============================================ */
-[data-theme='light'] .home-container {
+:host-context([data-theme='light']) .home-container {
   background: transparent;
 
   .hero {
@@ -656,12 +656,44 @@
     }
   }
 
-  .category-grid .category-card {
-    .card-overlay {
-      background: rgba(255, 255, 255, 0.35);
+  /* Przycisk "Zobacz wszystkie" – ciemna ramka, jasne tło, ciemna czcionka */
+  .section-header .view-all-link {
+    border: 2px solid var(--color-primary-dark) !important;
+    background: #ffffff !important;
+    color: var(--color-text-primary) !important;
+
+    &:hover {
+      background: #f8fafc !important;
+      border-color: var(--color-primary) !important;
+      color: var(--color-text-primary) !important;
+      box-shadow: 0 2px 12px var(--color-shadow-md);
     }
-    &:hover .card-overlay {
-      background: rgba(255, 255, 255, 0.12);
+  }
+
+  .category-grid .category-card {
+    border: 1px solid var(--color-primary-dark) !important;
+    background: linear-gradient(145deg, #ffffff 0%, rgba(248, 250, 255, 0.95) 100%) !important;
+    color: var(--color-text-primary) !important;
+
+    .card-overlay {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    &:hover {
+      border-color: var(--color-primary) !important;
+      background: linear-gradient(145deg, #ffffff 0%, rgba(248, 250, 255, 1) 100%) !important;
+
+      .card-overlay {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      h3 {
+        color: var(--color-primary);
+      }
+    }
+
+    h3,
+    p {
+      color: var(--color-text-primary) !important;
     }
   }
 
