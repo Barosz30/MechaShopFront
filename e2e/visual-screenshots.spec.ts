@@ -95,6 +95,37 @@ for (const [viewportName, viewportSize] of Object.entries(VIEWPORTS)) {
   }
 }
 
+/** 1x1 PNG do otwarcia modalu cropowania na stronie items/new */
+const CROP_TEST_PNG_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+
+// Podgląd modalu cropowania na stronie „Dodaj przedmiot” (desktop)
+for (const theme of THEMES) {
+  test(`screenshot desktop ${theme} items-new-crop-modal`, async ({ page }) => {
+    await page.setViewportSize(VIEWPORTS.desktop);
+    await page.addInitScript(
+      (themeValue: string) => {
+        localStorage.setItem('app-theme', themeValue);
+        document.documentElement.setAttribute('data-theme', themeValue);
+      },
+      theme,
+    );
+    await page.goto('/items/new', { waitUntil: 'networkidle' });
+    await page.locator('app-item-create').first().waitFor({ state: 'visible', timeout: 10_000 });
+    const buffer = Buffer.from(CROP_TEST_PNG_BASE64, 'base64');
+    const fileChooserPromise = page.waitForEvent('filechooser', { timeout: 5_000 });
+    await page.getByRole('button', { name: 'Wybierz plik' }).click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles({ name: 'test.png', mimeType: 'image/png', buffer });
+    await page.locator('.crop-modal').filter({ hasText: 'Przytnij zdjęcie' }).waitFor({ state: 'visible', timeout: 15_000 });
+    const dir = `e2e-screenshots/desktop-${VIEWPORTS.desktop.width}x${VIEWPORTS.desktop.height}/${theme}`;
+    await page.screenshot({
+      path: `${dir}/items-new-crop-modal.png`,
+      fullPage: true,
+    });
+  });
+}
+
 // Podgląd otwartego burger menu – tylko na mobile (z przykładowym koszykiem w nagłówku)
 const MOBILE_VIEWPORT = VIEWPORTS.mobile;
 for (const theme of THEMES) {

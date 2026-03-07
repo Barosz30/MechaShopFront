@@ -94,7 +94,7 @@
       </p>
     </div>
 
-    <div class="field">
+    <div class="field" *ngIf="!cropSourceFile()">
       <label for="image">Obrazek produktu (opcjonalny)</label>
       <div class="file-input">
         <input
@@ -115,6 +115,108 @@
         <span class="file-input__file-name">
           {{ selectedFile()?.name || 'Nie wybrano pliku' }}
         </span>
+      </div>
+    </div>
+
+    <!-- Modal cropowania zdjęcia -->
+    <div class="crop-modal" *ngIf="cropSourceFile()" role="dialog" aria-labelledby="crop-title" aria-modal="true">
+      <div class="crop-modal__backdrop"></div>
+      <div class="crop-modal__panel">
+        <h3 id="crop-title" class="crop-modal__title">Przytnij zdjęcie</h3>
+        <p class="crop-modal__hint">Zaznacz obszar do przycięcia. Przeciągnij rogi lub krawędzie, aby zmienić rozmiar.</p>
+
+        <div #cropContainer class="crop-container">
+          <canvas
+            #cropCanvas
+            class="crop-canvas"
+            (mousedown)="onCropMouseDown($event)"
+            (mousemove)="onCropMouseMove($event)"
+            (mouseup)="onCropMouseUp()"
+            (mouseleave)="onCropMouseLeave()"
+            (wheel)="onCropWheel($event)"
+          ></canvas>
+        </div>
+
+        <div class="crop-controls crop-controls--zoom">
+          <fieldset class="crop-controls__zoom" aria-label="Powiększenie">
+            <legend class="crop-controls__legend">Powiększenie</legend>
+            <div class="crop-zoom-row">
+              <button
+                type="button"
+                class="crop-zoom-btn"
+                (click)="setCropZoomDelta(-0.25)"
+                [attr.aria-label]="'Oddal'"
+                title="Oddal"
+              >
+                −
+              </button>
+              <span class="crop-zoom-value">{{ (cropZoom() * 100) | number:'1.0-0' }}%</span>
+              <button
+                type="button"
+                class="crop-zoom-btn"
+                (click)="setCropZoomDelta(0.25)"
+                [attr.aria-label]="'Przybliż'"
+                title="Przybliż"
+              >
+                +
+              </button>
+            </div>
+            <p class="crop-zoom-hint">Kółkiem myszy na podglądzie możesz przybliżać i oddalać.</p>
+          </fieldset>
+        </div>
+
+        <div class="crop-controls">
+          <fieldset class="crop-controls__shape" aria-label="Kształt przycięcia">
+            <legend class="crop-controls__legend">Kształt</legend>
+            <div class="crop-shape-buttons">
+              <button
+                type="button"
+                class="crop-shape-btn"
+                [class.crop-shape-btn--active]="cropShape() === 'rect'"
+                (click)="setCropShape('rect')"
+                title="Prostokąt"
+              >
+                <span class="crop-shape-icon crop-shape-icon--rect" aria-hidden="true"></span>
+                <span>Prostokąt</span>
+              </button>
+              <button
+                type="button"
+                class="crop-shape-btn"
+                [class.crop-shape-btn--active]="cropShape() === 'circle'"
+                (click)="setCropShape('circle')"
+                title="Koło"
+              >
+                <span class="crop-shape-icon crop-shape-icon--circle" aria-hidden="true"></span>
+                <span>Koło</span>
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset class="crop-controls__ratio" aria-label="Proporcje">
+            <legend class="crop-controls__legend">Proporcje</legend>
+            <div class="crop-ratio-buttons">
+              @for (preset of aspectRatioPresets; track preset.label) {
+                <button
+                  type="button"
+                  class="crop-ratio-btn"
+                  [class.crop-ratio-btn--active]="(cropAspectRatio() ?? null) === preset.value"
+                  (click)="setAspectRatio(preset.value)"
+                >
+                  {{ preset.label }}
+                </button>
+              }
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="crop-modal__actions">
+          <button type="button" class="crop-modal__btn crop-modal__btn--secondary" (click)="cancelCrop()">
+            Anuluj
+          </button>
+          <button type="button" class="crop-modal__btn crop-modal__btn--primary" (click)="applyCrop()">
+            Zastosuj
+          </button>
+        </div>
       </div>
     </div>
 

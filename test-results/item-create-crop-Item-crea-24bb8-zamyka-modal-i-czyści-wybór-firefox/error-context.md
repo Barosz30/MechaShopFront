@@ -1,0 +1,76 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - link "Przejdź do treści" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e5]:
+    - generic [ref=e6] [cursor=pointer]: Warsztat
+    - navigation [ref=e7]:
+      - link "Start" [ref=e8] [cursor=pointer]:
+        - /url: /
+      - link "Wszystkie" [ref=e9] [cursor=pointer]:
+        - /url: /items
+      - link "Dodaj nowy" [ref=e10] [cursor=pointer]:
+        - /url: /items/new
+    - generic [ref=e11]:
+      - button "Włącz motyw jasny" [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: ☀️
+      - link "Koszyk (0)" [ref=e14] [cursor=pointer]:
+        - /url: /cart
+      - button "Zaloguj" [ref=e15] [cursor=pointer]
+  - main [active] [ref=e16]:
+    - generic [ref=e18]:
+      - heading "Dodaj nowy przedmiot" [level=2] [ref=e19]
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22]: Nazwa
+          - textbox "Nazwa" [ref=e23]
+        - generic [ref=e24]:
+          - generic [ref=e25]: Cena (PLN)
+          - spinbutton "Cena (PLN)" [ref=e26]: "0"
+        - generic [ref=e27]:
+          - generic [ref=e28]: Opis
+          - textbox "Opis" [ref=e29]
+        - generic [ref=e30]:
+          - generic [ref=e31]: Kategoria (opcjonalna)
+          - combobox "Kategoria (opcjonalna)" [ref=e32]:
+            - option "— Brak kategorii" [selected]
+            - option "Oświetlenie"
+            - option "Rowery Szosowe"
+            - option "Części"
+            - option "Rowery MTB"
+            - option "Kaski"
+        - dialog "Przytnij zdjęcie" [ref=e33]:
+          - generic [ref=e35]:
+            - heading "Przytnij zdjęcie" [level=3] [ref=e36]
+            - paragraph [ref=e37]: Zaznacz obszar do przycięcia. Przeciągnij rogi lub krawędzie, aby zmienić rozmiar.
+            - group "Powiększenie" [ref=e41]:
+              - generic [ref=e42]: Powiększenie
+              - generic [ref=e43]:
+                - button "Oddal" [ref=e44] [cursor=pointer]: −
+                - generic [ref=e45]: 100%
+                - button "Przybliż" [ref=e46] [cursor=pointer]: +
+              - paragraph [ref=e47]: Kółkiem myszy na podglądzie możesz przybliżać i oddalać.
+            - generic [ref=e48]:
+              - group "Kształt przycięcia" [ref=e49]:
+                - generic [ref=e50]: Kształt
+                - generic [ref=e51]:
+                  - button "Prostokąt" [ref=e52] [cursor=pointer]:
+                    - generic [ref=e54]: Prostokąt
+                  - button "Koło" [ref=e55] [cursor=pointer]:
+                    - generic [ref=e57]: Koło
+              - group "Proporcje" [ref=e58]:
+                - generic [ref=e59]: Proporcje
+                - generic [ref=e60]:
+                  - button "Dowolne" [ref=e61] [cursor=pointer]
+                  - button "1:1" [ref=e62] [cursor=pointer]
+                  - button "4:3" [ref=e63] [cursor=pointer]
+                  - button "3:4" [ref=e64] [cursor=pointer]
+                  - button "16:9" [ref=e65] [cursor=pointer]
+                  - button "9:16" [ref=e66] [cursor=pointer]
+            - generic [ref=e67]:
+              - button "Anuluj" [ref=e68] [cursor=pointer]
+              - button "Zastosuj" [ref=e69] [cursor=pointer]
+        - button "Zapisz przedmiot" [ref=e70] [cursor=pointer]
+```

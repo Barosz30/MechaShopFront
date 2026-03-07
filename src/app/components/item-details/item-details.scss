@@ -43,7 +43,8 @@
   width: 100%;
   max-width: 100%;
   max-height: 500px;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   margin: 0 auto;
   transition: transform var(--transition-slow), opacity var(--transition-base), filter var(--transition-base);
   border-radius: var(--radius-md);
