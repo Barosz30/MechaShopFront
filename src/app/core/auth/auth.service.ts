@@ -9,6 +9,10 @@ interface AuthResponse {
   access_token: string;
 }
 
+interface ForgotPasswordResponse {
+  message: string;
+}
+
 export interface User {
   username: string;
   sub: number;
@@ -48,6 +52,18 @@ export class AuthService {
       .pipe(
         tap(response => this.handleAuthSuccess(response.access_token))
       );
+  }
+
+  changePassword(payload: { oldPassword: string; newPassword: string }) {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/auth/change-password`, payload);
+  }
+
+  forgotPassword(payload: { username: string }) {
+    return this.http.post<ForgotPasswordResponse>(`${this.apiUrl}/auth/forgot-password`, payload);
+  }
+
+  resetPassword(payload: { token: string; newPassword: string }) {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/auth/reset-password`, payload);
   }
 
   logout() {

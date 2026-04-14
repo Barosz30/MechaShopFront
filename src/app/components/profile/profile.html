@@ -61,6 +61,46 @@
         }
       </section>
 
+      <section class="section password-section" aria-label="Zmiana hasła">
+        <h2>Zmień hasło</h2>
+        <form [formGroup]="changePasswordForm" (ngSubmit)="submitPasswordChange()" novalidate>
+          <label class="field-label" for="oldPassword">Aktualne hasło</label>
+          <input
+            id="oldPassword"
+            type="password"
+            formControlName="oldPassword"
+            autocomplete="current-password"
+          />
+
+          <label class="field-label" for="newPassword">Nowe hasło</label>
+          <input
+            id="newPassword"
+            type="password"
+            formControlName="newPassword"
+            autocomplete="new-password"
+          />
+
+          <label class="field-label" for="confirmPassword">Powtórz nowe hasło</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
+
+          @if (changePasswordError()) {
+            <p class="error">{{ changePasswordError() }}</p>
+          }
+          @if (changePasswordSuccess()) {
+            <p class="success">{{ changePasswordSuccess() }}</p>
+          }
+
+          <button type="submit" class="btn btn-primary" [disabled]="isChangingPassword()">
+            {{ isChangingPassword() ? 'Zapisywanie...' : 'Zmień hasło' }}
+          </button>
+        </form>
+      </section>
+
       <div class="actions">
         <a routerLink="/" class="btn btn-primary">Strona główna</a>
         <a routerLink="/items" class="btn btn-secondary">Sklep</a>

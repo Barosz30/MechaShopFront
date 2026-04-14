@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, inject, NgZone, Output, signal, ViewChild, afterNextRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -9,7 +10,7 @@ declare const google: any;
 @Component({
   selector: 'app-login-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <div class="modal-overlay" (click)="close.emit()">
       <div class="modal-content" (click)="$event.stopPropagation()">
@@ -20,6 +21,10 @@ declare const google: any;
         <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
           <input type="email" formControlName="email" placeholder="Email">
           <input type="password" formControlName="password" placeholder="Hasło">
+
+          <a *ngIf="isLoginMode()" routerLink="/forgot-password" class="forgot-link" (click)="close.emit()">
+            Nie pamiętasz hasła?
+          </a>
 
           <div class="error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
 
@@ -52,6 +57,7 @@ declare const google: any;
     .switch-mode span { color: #007bff; cursor: pointer; font-weight: bold; text-decoration: underline; }
     .error { color: red; font-size: 0.85rem; margin-bottom: 10px; }
     .google-btn-wrapper { display: flex; justify-content: center; min-height: 44px; }
+    .forgot-link { display: inline-block; margin: 4px 0 8px; font-size: 0.9rem; color: #007bff; text-decoration: underline; cursor: pointer; }
 
     :host-context([data-theme='dark']) .modal-content {
       background: var(--color-bg-secondary);
@@ -65,6 +71,7 @@ declare const google: any;
     :host-context([data-theme='dark']) .divider { color: var(--color-text-muted); }
     :host-context([data-theme='dark']) .switch-mode { color: var(--color-text-secondary); }
     :host-context([data-theme='dark']) .switch-mode span { color: var(--color-primary); }
+    :host-context([data-theme='dark']) .forgot-link { color: var(--color-primary); }
     :host-context([data-theme='dark']) input {
       background: var(--color-bg-tertiary);
       border-color: var(--color-border);
