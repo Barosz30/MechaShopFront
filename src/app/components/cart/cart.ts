@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { CartItem, CartService } from '../../core/cart/cart.service';
 import { PaymentsService } from '../../core/payments/payments.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { RevealOnScrollDirective } from '../../shared/directives/reveal-on-scroll.directive';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, RevealOnScrollDirective],
   templateUrl: './cart.html',
   styleUrls: ['./cart.scss'],
 })

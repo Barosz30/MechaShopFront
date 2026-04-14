@@ -1,6 +1,6 @@
 <div class="shop-items-list-container">
   <!-- Górny pasek: Wróć (lewo) + Filtruj (prawo) -->
-  <div class="top-bar">
+  <div class="top-bar motion-enter" appRevealOnScroll>
     <button (click)="goBack()" class="back-btn">
       <span class="back-icon">←</span>
       <span>Wróć</span>
@@ -177,7 +177,16 @@
     </div>
   </div>
 
-  <h2>Przedmioty w sklepie</h2>
+  <h2 appRevealOnScroll [delayMs]="60">Przedmioty w sklepie</h2>
+
+  <p
+    class="filter-feedback"
+    *ngIf="filterFeedback() as feedback"
+    [class.filter-feedback--success]="feedback.kind === 'success'"
+    [class.filter-feedback--info]="feedback.kind === 'info'"
+    aria-live="polite">
+    {{ feedback.text }}
+  </p>
 
   <div *ngIf="loading()" class="state-message">
     Ładowanie listy przedmiotów...
@@ -191,12 +200,14 @@
     Brak przedmiotów do wyświetlenia.
   </div>
 
-  <div class="items-grid" *ngIf="!loading() && !error() && items().length > 0">
+  <div class="items-grid motion-enter" *ngIf="!loading() && !error() && items().length > 0" appRevealOnScroll [delayMs]="100">
     <a
       class="item-card"
-      *ngFor="let item of items()"
+      *ngFor="let item of items(); let i = index"
       [routerLink]="['/item', item.id]"
-      [state]="getCurrentQueryParams()">
+      [state]="getCurrentQueryParams()"
+      appRevealOnScroll
+      [delayMs]="120 + i * 40">
       <div 
         class="item-image-container" 
         *ngIf="getThumbnailUrl(item.imageUrl) && !failedImageIds().has(item.id)"
@@ -211,7 +222,7 @@
           loading="lazy"
           (error)="onImageError(item)"
           (load)="onImageLoad(item)">
-        <div class="item-image-skeleton" *ngIf="!loadedImageIds().has(item.id)" aria-hidden="true"></div>
+        <div class="item-image-skeleton" [class.is-hidden]="loadedImageIds().has(item.id)" aria-hidden="true"></div>
       </div>
       <div class="item-header">
         <h3>{{ item.name }}</h3>
@@ -231,7 +242,7 @@
   </div>
 
   <!-- Paginacja -->
-  <div class="pagination-container" *ngIf="!loading() && !error() && items().length > 0">
+  <div class="pagination-container motion-enter" *ngIf="!loading() && !error() && items().length > 0" appRevealOnScroll [delayMs]="140">
     <div class="pagination">
       <button 
         *ngIf="currentPage() > 1"

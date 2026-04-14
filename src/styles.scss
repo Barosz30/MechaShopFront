@@ -39,6 +39,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 88px;
 }
 
 body {
@@ -51,6 +52,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background var(--transition-base), color var(--transition-base);
+}
+
+main,
+[role='main'] {
+  scroll-margin-top: 88px;
 }
 
 [data-theme='light'] body {
@@ -213,6 +219,53 @@ a {
   }
 }
 
+button,
+a,
+[role='button'],
+input,
+select,
+textarea,
+summary {
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base),
+    opacity var(--transition-base);
+}
+
+a,
+button,
+[role='button'] {
+  min-height: 24px;
+  min-width: 24px;
+}
+
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-hover,
+  .card,
+  .item-card,
+  .category-card,
+  .featured-banner,
+  .banner-glass,
+  .navbar {
+    will-change: transform, box-shadow;
+  }
+}
+
 /* ============================================
    GLOBAL ANIMATIONS
    ============================================ */
@@ -302,6 +355,17 @@ a {
   }
 }
 
+@keyframes fadeInSoft {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* ============================================
    UTILITY CLASSES
    ============================================ */
@@ -314,6 +378,24 @@ a {
 
 .text-center {
   text-align: center;
+}
+
+.motion-enter {
+  animation: fadeInSoft 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(18px) scale(0.995);
+  transition:
+    opacity 500ms ease,
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: none;
 }
 
 .mt-1 { margin-top: var(--spacing-xs); }
@@ -396,4 +478,37 @@ a {
 /* Checkbox label w light modal */
 [data-theme='light'] .filter-modal .filter-label--checkbox {
   color: #334155 !important;
+}
+
+@media (prefers-reduced-motion: reduce), (update: slow) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .floating-elements,
+  .spotlight,
+  .hero .hero-content,
+  .item-card,
+  .category-card,
+  .featured-banner,
+  .banner-glass,
+  .mobile-menu,
+  .mobile-overlay {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }

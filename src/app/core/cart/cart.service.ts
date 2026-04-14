@@ -15,6 +15,7 @@ export class CartService {
   private storageKey = 'cart';
 
   items = signal<CartItem[]>([]);
+  lastAddedAt = signal<number>(0);
 
   constructor() {
     this.loadFromStorage();
@@ -32,6 +33,7 @@ export class CartService {
     }
 
     this.saveToStorage();
+    this.lastAddedAt.set(Date.now());
   }
 
   updateQuantity(itemId: number, quantity: number): void {

@@ -13,6 +13,28 @@
   }
 }
 
+.filter-feedback {
+  margin: calc(-1 * var(--spacing-sm)) 0 var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  width: fit-content;
+  animation: fadeInSoft 220ms ease-out;
+
+  &--success {
+    color: var(--color-success-text);
+    background: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+  }
+
+  &--info {
+    color: var(--color-text-primary);
+    background: rgba(var(--color-primary-rgb), 0.14);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.35);
+  }
+}
+
 .items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -22,17 +44,6 @@
   @include respond-to('md') {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: var(--spacing-xl);
-  }
-
-  // Stagger animation for cards
-  .item-card {
-    animation: fadeInUp var(--animation-duration-base) ease-out backwards;
-    
-    @for $i from 1 through 20 {
-      &:nth-child(#{$i}) {
-        animation-delay: #{$i * 0.05}s;
-      }
-    }
   }
 }
 
@@ -120,6 +131,8 @@
 
 .item-image-skeleton {
   @include skeleton-image;
+  opacity: 1;
+  transition: opacity var(--transition-base);
   
   // Enhanced skeleton with multiple layers
   &::before {
@@ -132,6 +145,11 @@
       transparent 50%
     );
     animation: pulse var(--animation-duration-slow) ease-in-out infinite;
+  }
+
+  &.is-hidden {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
@@ -212,6 +230,8 @@
   justify-content: space-between;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
+  position: relative;
+  z-index: var(--z-dropdown);
 }
 
 .filter-trigger-wrapper {
@@ -273,7 +293,7 @@
   max-height: min(85vh, 640px);
   display: flex;
   flex-direction: column;
-  animation: filterModalIn var(--transition-slow) ease-out;
+  animation: fadeInSoft var(--transition-slow) ease-out;
 
   &::before {
     content: '';
@@ -292,17 +312,6 @@
     );
     opacity: 0.9;
     border-radius: var(--modal-radius) var(--modal-radius) 0 0;
-  }
-}
-
-@keyframes filterModalIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
@@ -421,7 +430,7 @@
   max-height: 220px;
   overflow-y: auto;
   overflow-x: hidden;
-  animation: dropdownPanelIn var(--transition-fast) ease-out;
+  animation: fadeInSoft var(--transition-fast) ease-out;
 }
 
 /* Gdy brak miejsca na dole – lista otwiera się w górę, żeby nie wychodzić poza modal */
@@ -430,29 +439,7 @@
   bottom: 100%;
   margin-top: 0;
   margin-bottom: 4px;
-  animation: dropdownPanelInUp var(--transition-fast) ease-out;
-}
-
-@keyframes dropdownPanelIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes dropdownPanelInUp {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: fadeInSoft var(--transition-fast) ease-out;
 }
 
 .custom-dropdown-option {
@@ -612,49 +599,6 @@
   &:hover {
     color: var(--color-text-primary);
     border-color: var(--color-text-muted);
-  }
-}
-
-/* ============================================
-   FILTER MODAL – LIGHT THEME (backup w komponencie)
-   Główne style są w styles.scss (globalne), żeby działały mimo encapsulacji.
-   ============================================ */
-:host-context([data-theme='light']) .filter-modal {
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  color: #0f172a;
-
-  .filter-label,
-  .custom-dropdown-label {
-    color: #334155;
-  }
-
-  .filter-input,
-  .filter-select,
-  .custom-dropdown-trigger {
-    background: #ffffff;
-    border-color: var(--color-border);
-    color: #0f172a;
-  }
-
-  .filter-input::placeholder {
-    color: #64748b;
-    opacity: 1;
-  }
-
-  .custom-dropdown-panel {
-    background: #ffffff;
-    border: 1px solid var(--color-border);
-  }
-
-  .custom-dropdown-option {
-    color: #0f172a;
-  }
-
-  .btn-clear {
-    background: #f8fafc;
-    border-color: #94a3b8;
-    color: #334155;
   }
 }
 

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   QueryList,
   signal,
@@ -18,15 +19,16 @@ import {
   ShopItemsService,
   SortOrder
 } from '../../core/shop-items/shop-items.service';
+import { RevealOnScrollDirective } from '../../shared/directives/reveal-on-scroll.directive';
 
 @Component({
   selector: 'app-shop-items-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, RevealOnScrollDirective],
   templateUrl: './shop-items-list.html',
   styleUrls: ['./shop-items-list.scss']
 })
-export class ShopItemsListComponent implements OnInit {
+export class ShopItemsListComponent implements OnInit, OnDestroy {
   items = signal<ShopItem[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
@@ -58,6 +60,9 @@ export class ShopItemsListComponent implements OnInit {
   /** Debounce: zapis parametrów filtrów do URL przy wpisywaniu */
   private urlSyncTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly URL_SYNC_DEBOUNCE_MS = 400;
+  private feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  filterFeedback = signal<{ text: string; kind: 'success' | 'info' } | null>(null);
 
   @ViewChild('filterModal') filterModalRef: ElementRef<HTMLElement> | undefined;
   @ViewChildren('dropdownWrap') dropdownWraps: QueryList<ElementRef<HTMLElement>> | undefined;
@@ -212,6 +217,17 @@ export class ShopItemsListComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.urlSyncTimeout != null) {
+      clearTimeout(this.urlSyncTimeout);
+      this.urlSyncTimeout = null;
+    }
+    if (this.feedbackTimeout != null) {
+      clearTimeout(this.feedbackTimeout);
+      this.feedbackTimeout = null;
+    }
+  }
+
   /** Aktualizuje sygnały filtrów na podstawie query params */
   syncFilterSignalsFromParams(params: Params): void {
     this.filterSearch.set(params['search'] ?? '');
@@ -337,6 +353,7 @@ export class ShopItemsListComponent implements OnInit {
       queryParams,
       queryParamsHandling: ''
     });
+    this.showFilterFeedback('Zastosowano filtry', 'success');
   }
 
   /** Wyczyść filtry i załaduj od nowa */
@@ -355,6 +372,7 @@ export class ShopItemsListComponent implements OnInit {
       queryParamsHandling: ''
     });
     this.loadItems({ page: 1 });
+    this.showFilterFeedback('Wyczyszczono filtry', 'info');
   }
 
   loadItems(queryParams?: Params): void {
@@ -493,6 +511,17 @@ export class ShopItemsListComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/']);
+  }
+
+  private showFilterFeedback(text: string, kind: 'success' | 'info'): void {
+    this.filterFeedback.set({ text, kind });
+    if (this.feedbackTimeout != null) {
+      clearTimeout(this.feedbackTimeout);
+    }
+    this.feedbackTimeout = setTimeout(() => {
+      this.filterFeedback.set(null);
+      this.feedbackTimeout = null;
+    }, 1800);
   }
 }
 

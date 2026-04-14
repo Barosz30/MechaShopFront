@@ -1,7 +1,7 @@
 <header class="navbar">
   <div class="logo" routerLink="/">Warsztat</div>
 
-  <a routerLink="/cart" class="cart-link cart-link-mobile" (click)="closeMobileMenu()">
+  <a routerLink="/cart" class="cart-link cart-link-mobile" [class.cart-link--pulse]="cartPulse()" (click)="closeMobileMenu()">
     Koszyk ({{ cartService.items().length }})
   </a>
 
@@ -19,7 +19,7 @@
         <span class="theme-icon theme-icon-moon" aria-hidden="true">🌙</span>
       }
     </button>
-    <a routerLink="/cart" class="cart-link" (click)="closeMobileMenu()">
+    <a routerLink="/cart" class="cart-link" [class.cart-link--pulse]="cartPulse()" (click)="closeMobileMenu()">
       Koszyk ({{ cartService.items().length }})
     </a>
     @if (authService.currentUser(); as user) {

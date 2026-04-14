@@ -1,5 +1,5 @@
 <div class="home-container">
-  <section class="hero" aria-label="Baner główny">
+  <section class="hero motion-enter" aria-label="Baner główny" appRevealOnScroll>
     <div class="hero-bg-image" aria-hidden="true"></div>
     <div class="hero-content">
       <h1>Mechanika w Twoich <span class="highlight">Rękach</span></h1>
@@ -17,8 +17,8 @@
     </div>
   </section>
 
-  <section class="categories">
-    <div class="section-header">
+  <section class="categories" appRevealOnScroll [delayMs]="60">
+    <div class="section-header motion-enter">
       <h2>Popularne Kategorie</h2>
       <a routerLink="/items" class="view-all-link">Zobacz wszystkie</a>
     </div>
@@ -34,12 +34,14 @@
       </button>
     </div>
 
-    <div class="category-grid" *ngIf="!loading() && !error() && categories().length > 0">
-      @for (cat of categories(); track cat.id) {
+    <div class="category-grid motion-enter" *ngIf="!loading() && !error() && categories().length > 0">
+      @for (cat of categories(); track cat.id; let i = $index) {
         <a [routerLink]="['/items']" [queryParams]="{ categoryId: cat.id }" 
            class="category-card"
            [attr.aria-label]="'Kategoria: ' + cat.name"
            #card
+           appRevealOnScroll
+           [delayMs]="100 + i * 60"
            (mousemove)="handleMouseMove($event, card)">
           <div class="card-overlay"></div>
           <div class="spotlight"></div>
@@ -59,7 +61,7 @@
     </div>
   </section>
 
-  <section class="featured-banner" *ngIf="!featuredLoading() && featuredItem(); else featuredPlaceholder" aria-label="Polecany produkt">
+  <section class="featured-banner motion-enter" *ngIf="!featuredLoading() && featuredItem(); else featuredPlaceholder" aria-label="Polecany produkt" appRevealOnScroll [delayMs]="120">
     <a [routerLink]="['/item', featuredItem()!.id]" class="banner-link" [attr.aria-label]="'Polecany produkt: ' + featuredItem()!.name">
       <div class="banner-glass" #bannerGlass (mousemove)="handleMouseMove($event, bannerGlass)">
         <div class="spotlight" aria-hidden="true"></div>

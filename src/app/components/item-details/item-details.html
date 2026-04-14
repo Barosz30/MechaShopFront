@@ -27,7 +27,7 @@
           class="item-detail-image"
           [class.loaded]="imageLoaded()"
         />
-        <div class="item-image-skeleton" *ngIf="!imageLoaded()" aria-hidden="true"></div>
+        <div class="item-image-skeleton" [class.is-hidden]="imageLoaded()" aria-hidden="true"></div>
       </div>
     </section>
     <section class="item-header">
@@ -52,6 +52,9 @@
         (click)="addToCart()">
         {{ justAddedToCart() ? 'Dodano do koszyka' : 'Dodaj do koszyka' }}
       </button>
+      <p class="add-feedback" aria-live="polite">
+        {{ justAddedToCart() ? 'Produkt dodany do koszyka.' : '' }}
+      </p>
     </section>
 
     <section class="item-body" *ngIf="item.details || item.category">

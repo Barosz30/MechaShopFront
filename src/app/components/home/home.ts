@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Category, ShopItem, ShopItemsService } from '../../core/shop-items/shop-items.service';
+import { RevealOnScrollDirective } from '../../shared/directives/reveal-on-scroll.directive';
 
 interface CategoryWithCount extends Category {
   itemCount?: number;
@@ -10,7 +11,7 @@ interface CategoryWithCount extends Category {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, RevealOnScrollDirective],
   templateUrl: './home.html',
   styleUrls: ['./home.scss']
 })

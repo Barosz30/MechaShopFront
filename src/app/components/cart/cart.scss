@@ -15,7 +15,7 @@
   margin-top: 16px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .cart-content {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -208,11 +208,31 @@
   border: 1px solid var(--color-border-light, #2a3140);
   border-radius: 16px;
   padding: 20px;
+  width: 100%;
+  min-width: 0;
   background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
               var(--color-bg-card, #111827);
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 640px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cart-item .actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .cart-item .actions .quantity-wrapper {
+    flex-wrap: wrap;
+  }
 }
 
 .summary .row {

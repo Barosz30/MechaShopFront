@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, OnDestroy, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -13,12 +13,15 @@ import { ThemeService } from '../../core/theme/theme.service';
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
   authService = inject(AuthService);
   cartService = inject(CartService);
   themeService = inject(ThemeService);
   isModalOpen = signal(false);
   mobileMenuOpen = signal(false);
+  cartPulse = signal(false);
+  private cartPulseTimeout: ReturnType<typeof setTimeout> | null = null;
+  private lastKnownCartSize = 0;
 
   constructor() {
     effect(() => {
@@ -27,6 +30,35 @@ export class HeaderComponent {
         document.body.style.overflow = open ? 'hidden' : '';
       }
     });
+
+    effect(() => {
+      const addedTick = this.cartService.lastAddedAt();
+      const totalItems = this.cartService.items().reduce((sum, ci) => sum + ci.quantity, 0);
+      if (!addedTick) {
+        this.lastKnownCartSize = totalItems;
+        return;
+      }
+      if (totalItems <= this.lastKnownCartSize) {
+        this.lastKnownCartSize = totalItems;
+        return;
+      }
+      this.lastKnownCartSize = totalItems;
+      this.cartPulse.set(true);
+      if (this.cartPulseTimeout) {
+        clearTimeout(this.cartPulseTimeout);
+      }
+      this.cartPulseTimeout = setTimeout(() => {
+        this.cartPulse.set(false);
+        this.cartPulseTimeout = null;
+      }, 850);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.cartPulseTimeout) {
+      clearTimeout(this.cartPulseTimeout);
+      this.cartPulseTimeout = null;
+    }
   }
 
   toggleMobileMenu() {
