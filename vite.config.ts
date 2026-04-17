@@ -13,6 +13,7 @@ export default defineConfig({
   },
   preview: {
     port: 4200,
+    allowedHosts: ['mechashopfront.onrender.com'],
   },
   test: {
     environment: 'jsdom',
