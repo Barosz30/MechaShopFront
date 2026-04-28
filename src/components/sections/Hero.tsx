@@ -58,7 +58,7 @@ function Hero() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to={storefrontSectionRoutes.shop}
-                className="focus-ring inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 to-violet-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+                className="focus-ring inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 to-violet-400 px-5 py-3 text-sm font-semibold !text-black transition hover:brightness-110 hover:!text-black focus-visible:!text-black"
               >
                 Shop featured products
                 <ArrowRight className="h-4 w-4" />

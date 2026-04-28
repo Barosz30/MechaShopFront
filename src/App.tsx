@@ -83,6 +83,8 @@ function App() {
         <Route path={storefrontSectionRoutes.reviews} element={<StorefrontPage />} />
         <Route path={storefrontSectionRoutes.faq} element={<StorefrontPage />} />
         <Route path={storefrontSectionRoutes.newsletter} element={<StorefrontPage />} />
+        <Route path={storefrontSectionRoutes.cart} element={<StorefrontPage />} />
+        <Route path={storefrontSectionRoutes.checkout} element={<StorefrontPage />} />
         <Route
           path={storefrontSectionRoutes.login}
           element={
@@ -90,6 +92,10 @@ function App() {
               <LoginPage />
             </Suspense>
           }
+        />
+        <Route
+          path={storefrontSectionRoutes.signIn}
+          element={<Navigate to={storefrontSectionRoutes.login} replace />}
         />
         <Route
           path={storefrontSectionRoutes.account}
@@ -100,6 +106,10 @@ function App() {
               </RequireAuth>
             </Suspense>
           }
+        />
+        <Route
+          path={storefrontSectionRoutes.profile}
+          element={<Navigate to={storefrontSectionRoutes.account} replace />}
         />
         <Route
           path={storefrontSectionRoutes.paymentSuccess}

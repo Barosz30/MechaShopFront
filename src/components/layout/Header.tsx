@@ -6,7 +6,6 @@ import { navLinks } from '../../data/siteContent';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { useEscapeKey } from '../../hooks/useEscapeKey';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
-import { usePresence } from '../../hooks/usePresence';
 import { useShop } from '../../context/ShopContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -21,11 +20,13 @@ function Header() {
   const location = useLocation();
   const { cartCount, openCart } = useShop();
   const { isAuthenticated, user } = useAuth();
-  const { isMounted: isMobileMenuMounted, isVisible: isMobileMenuVisible } =
-    usePresence(isMobileMenuOpen, 220);
+  const isMobileMenuMounted = isMobileMenuOpen;
+  const isMobileMenuVisible = isMobileMenuOpen;
+  const openMobileMenu = () => setIsMobileMenuOpen(true);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   useBodyScrollLock(isMobileMenuMounted);
-  useEscapeKey(isMobileMenuOpen, () => setIsMobileMenuOpen(false));
+  useEscapeKey(isMobileMenuOpen, closeMobileMenu);
   useFocusTrap(menuRef, isMobileMenuOpen, { initialFocusRef: closeButtonRef });
 
   useEffect(() => {
@@ -39,7 +40,7 @@ function Header() {
   }, []);
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    closeMobileMenu();
   }, [location.pathname]);
 
   useEffect(() => {
@@ -149,7 +150,7 @@ function Header() {
 
               <button
                 type="button"
-                onClick={() => setIsMobileMenuOpen(true)}
+                onClick={openMobileMenu}
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-nav-dialog"
                 aria-label="Open mobile menu"
@@ -173,7 +174,7 @@ function Header() {
             aria-label="Close mobile menu"
             data-state={isMobileMenuVisible ? 'open' : 'closed'}
             className="dialog-backdrop absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={closeMobileMenu}
           />
           <div
             ref={menuRef}
@@ -195,7 +196,7 @@ function Header() {
               <button
                 ref={closeButtonRef}
                 type="button"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
                 className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200"
                 aria-label="Close mobile menu"
               >
@@ -208,7 +209,7 @@ function Header() {
                 <NavLink
                   key={link.label}
                   to={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                   className={({ isActive }) =>
                     `focus-ring rounded-2xl border px-4 py-3 text-base font-medium transition ${
                       isActive
@@ -225,7 +226,7 @@ function Header() {
             <div className="mt-5 grid gap-2 border-t border-white/10 pt-4">
               <Link
                 to={storefrontSectionRoutes.shop}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
                 className="focus-ring inline-flex items-center gap-2 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm font-medium text-slate-100 transition hover:border-cyan-300/20 hover:bg-white/7"
               >
                 <Search className="h-4 w-4 text-cyan-300" />
@@ -233,7 +234,7 @@ function Header() {
               </Link>
               <Link
                 to={isAuthenticated ? storefrontSectionRoutes.account : storefrontSectionRoutes.login}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
                 className="focus-ring inline-flex items-center rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm font-medium text-slate-100 transition hover:border-cyan-300/20 hover:bg-white/7"
               >
                 {isAuthenticated ? user?.username ?? 'Account' : 'Sign in'}

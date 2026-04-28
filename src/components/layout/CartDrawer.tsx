@@ -1,5 +1,6 @@
 import { Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react';
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   buildResponsiveImageUrl,
   buildResponsiveSrcSet,
@@ -14,10 +15,12 @@ import { useEscapeKey } from '../../hooks/useEscapeKey';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { usePresence } from '../../hooks/usePresence';
 import { useShop } from '../../context/ShopContext';
+import { storefrontSectionRoutes } from '../../config/routes';
 import ResponsiveImage from '../ui/ResponsiveImage';
 import ShippingProgress from '../ui/ShippingProgress';
 
 function CartDrawer() {
+  const navigate = useNavigate();
   const drawerRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const {
@@ -50,6 +53,15 @@ function CartDrawer() {
   if (!isMounted) {
     return null;
   }
+
+  const handleContinueToCheckout = () => {
+    if (cartItems.length === 0) {
+      return;
+    }
+
+    openCheckout();
+    navigate(storefrontSectionRoutes.checkout);
+  };
 
   return (
     <div
@@ -248,7 +260,7 @@ function CartDrawer() {
 
           <button
             type="button"
-            onClick={openCheckout}
+            onClick={handleContinueToCheckout}
             disabled={cartItems.length === 0}
             className="focus-ring mt-5 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-cyan-300 to-violet-400 px-5 py-3.5 text-sm font-semibold text-slate-950 transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
           >

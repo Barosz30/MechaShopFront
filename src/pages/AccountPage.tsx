@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchMyOrders, type OrderSummary } from '../api/mechanicalShopRestApi';
+import { storefrontSectionRoutes } from '../config/routes';
 import { useAuth } from '../context/AuthContext';
 
 function AccountPage() {
@@ -36,13 +38,13 @@ function AccountPage() {
             <p className="text-xs uppercase tracking-[0.28em] text-cyan-300/80">Account</p>
             <h1 className="mt-2 text-3xl font-semibold text-white">{user?.username}</h1>
           </div>
-          <button
-            type="button"
+          <Link
+            to={storefrontSectionRoutes.login}
             onClick={signOut}
             className="focus-ring rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100"
           >
             Sign out
-          </button>
+          </Link>
         </div>
 
         <h2 className="mt-8 text-xl font-semibold text-white">Your orders</h2>

@@ -1,5 +1,6 @@
 import { AlertCircle, CheckCircle2, LoaderCircle, X } from 'lucide-react';
 import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 import { useEscapeKey } from '../../hooks/useEscapeKey';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
@@ -8,6 +9,7 @@ import { useShop } from '../../context/ShopContext';
 import { useTelemetry } from '../../context/TelemetryContext';
 import { useAuth } from '../../context/AuthContext';
 import { createCheckoutSession } from '../../api/mechanicalShopRestApi';
+import { storefrontSectionRoutes } from '../../config/routes';
 import CheckoutFormSections from './checkout/CheckoutFormSections';
 import CheckoutSummary from './checkout/CheckoutSummary';
 import type {
@@ -27,6 +29,8 @@ import {
 } from './checkout/utils';
 
 function CheckoutModal() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const fieldRefs = useRef<Partial<Record<CheckoutFieldName, HTMLInputElement | null>>>({});
@@ -67,6 +71,9 @@ function CheckoutModal() {
     setTouched(createInitialTouchedState());
     setValues(initialCheckoutValues);
     completeMockOrder();
+    if (location.pathname === storefrontSectionRoutes.checkout) {
+      navigate(storefrontSectionRoutes.home, { replace: true });
+    }
   };
 
   const handleClose = () => {
@@ -81,6 +88,9 @@ function CheckoutModal() {
 
     resetSubmissionFeedback();
     closeCheckout();
+    if (location.pathname === storefrontSectionRoutes.checkout) {
+      navigate(storefrontSectionRoutes.home, { replace: true });
+    }
   };
 
   useBodyScrollLock(isMounted);
