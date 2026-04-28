@@ -6,8 +6,12 @@ export const storefrontSectionRoutes = {
   reviews: '/reviews',
   faq: '/faq',
   newsletter: '/newsletter',
+  cart: '/cart',
+  checkout: '/checkout',
   login: '/login',
+  signIn: '/sign-in',
   account: '/account',
+  profile: '/profile',
   paymentSuccess: '/payment-success',
   paymentCancel: '/payment-cancel',
 } as const;

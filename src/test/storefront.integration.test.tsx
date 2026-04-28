@@ -71,7 +71,10 @@ describe('Storefront integration', () => {
     const user = userEvent.setup();
     renderStorefront();
 
-    await user.click(screen.getAllByRole('button', { name: /add aurora tkl pro to cart/i })[0]!);
+    const addAuroraButtons = await screen.findAllByRole('button', {
+      name: /add aurora tkl pro to cart/i,
+    });
+    await user.click(addAuroraButtons[0]!);
     await user.click(screen.getByRole('button', { name: /open cart/i }));
     await user.click(await screen.findByRole('button', { name: /continue to checkout/i }));
 
@@ -116,7 +119,10 @@ describe('Storefront integration', () => {
       const user = userEvent.setup();
       renderStorefront();
 
-      await user.click(screen.getAllByRole('button', { name: /add aurora tkl pro to cart/i })[0]!);
+      const addAuroraButtons = await screen.findAllByRole('button', {
+        name: /add aurora tkl pro to cart/i,
+      });
+      await user.click(addAuroraButtons[0]!);
       await user.click(screen.getByRole('button', { name: /open cart/i }));
       await user.click(await screen.findByRole('button', { name: /continue to checkout/i }));
 
