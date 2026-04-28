@@ -87,6 +87,42 @@ describe('Auth/account pages', () => {
     expect(screen.getByText(/pending/i)).toBeInTheDocument();
   });
 
+  it('signs out from account page and redirects to login', async () => {
+    const user = userEvent.setup();
+    window.localStorage.setItem('mechashop-auth-token', 'token-xyz');
+
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url.endsWith('/auth/profile')) {
+        return new Response(JSON.stringify({ sub: 7, username: 'demo', iat: 0, exp: 0 }), {
+          status: 200,
+        });
+      }
+      if (url.endsWith('/api/orders')) {
+        return new Response(JSON.stringify([]), { status: 200 });
+      }
+      return new Response(JSON.stringify({}), { status: 200 });
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/account']}>
+        <AuthProvider>
+          <Routes>
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/login" element={<div>Login route</div>} />
+          </Routes>
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+    await user.click(await screen.findByRole('link', { name: /sign out/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Login route')).toBeInTheDocument();
+    });
+    expect(window.localStorage.getItem('mechashop-auth-token')).toBeNull();
+  });
+
   it('shows payment status for order id from query string', async () => {
     window.localStorage.setItem('mechashop-auth-token', 'token-xyz');
     vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {

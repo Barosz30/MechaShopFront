@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import Header from '../components/layout/Header';
@@ -62,6 +63,16 @@ describe('Header auth branches', () => {
     await waitFor(() => {
       expect(screen.getByRole('link', { name: /demo/i })).toBeInTheDocument();
     });
+  });
+
+  it('opens mobile menu when menu button is clicked', async () => {
+    const user = userEvent.setup();
+    renderHeader();
+
+    await user.click(await screen.findByRole('button', { name: /open mobile menu/i }));
+
+    expect(screen.getByRole('dialog', { name: /shop sections/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /close mobile menu/i })).toHaveLength(2);
   });
 });
 
