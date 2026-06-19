@@ -2,7 +2,6 @@ import { Search } from 'lucide-react';
 import { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getProductRoute, storefrontSectionRoutes } from '../../config/routes';
-import { products } from '../../data/products';
 import { useShop } from '../../context/ShopContext';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
 import type { CategorySlug, Product } from '../../types';
@@ -20,6 +19,7 @@ function FeaturedProducts() {
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const {
+    products,
     categories,
     filteredProducts,
     searchQuery,
@@ -34,7 +34,7 @@ function FeaturedProducts() {
   const sectionReveal = useScrollReveal<HTMLElement>();
   const quickViewProduct = useMemo<Product | null>(
     () => products.find((product) => String(product.id) === id) ?? null,
-    [id],
+    [products, id],
   );
   const closeRoute = useMemo(() => {
     const from = (location.state as QuickViewNavigationState | null)?.from;
